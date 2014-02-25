@@ -1,0 +1,8 @@
+{
+  "name": "emu-dide",
+  "dependencies": {
+    "bootstrap": "~3.1.1",
+    "codemirror": "~3.22.0",
+    "augment": "~4.0.0"
+  }
+}
