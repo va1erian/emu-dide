@@ -8,7 +8,8 @@ module.exports = function(grunt) {
       codemirror: {
         options: {
           beautify: false,
-          mangle: false
+          mangle: false,
+          sourceMap: true
         },
         files: {
           'build/pub/js/codemirror.js': 
@@ -21,7 +22,8 @@ module.exports = function(grunt) {
       debug: {
         options: {
           beautify: true,
-          mangle: false
+          mangle: false,
+          sourceMap: true
         },
         files: {
           'build/pub/js/emu-dide.js': ['src/app/**/*.js']

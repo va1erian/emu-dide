@@ -7,46 +7,51 @@ body {
   padding-top: 50px;
 }
 
-
-/*
- * Global add-ons
- */
-
-.sub-header {
-  padding-bottom: 10px;
-  border-bottom: 1px solid #eee;
+.nav a {
+  text-transform: uppercase;
 }
+.navbar-brand {
+  font-size: 1.6em;
+  font-weight: bold;
 
-
-
-.sidebar {
+}
+.side-pane {
     position: fixed;
     top: 51px;
     bottom: 0;
     right: 0;
+    width: 400px;
     z-index: 1000;
     display: block;
-    padding: 20px;
+    padding: 0;
     overflow-x: hidden;
     overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
     background-color: #f5f5f5;
-    border-right: 1px solid #eee;
-  }
+    border-left: 1px solid #eee;
 
-.nav-sidebar > li > a {
-  padding-right: 20px;
-  padding-left: 20px;
 }
-.nav-sidebar > .active > a {
-  color: #fff;
-  background-color: #428bca;
+#emulator-pane .panel {
+  margin:0;
+  padding:0;
+  border: 0;
+}
+#emulator-pane .panel-heading {
+  margin: 0;
+  padding: 4px;
+}
+#emulator-pane .panel-title {
+  font-size: 0.8em;
+  text-transform: uppercase;
+  font-weight: bold;
 }
 
+#emulator-pane #memory-view-panel {
+  overflow-y:auto;
+}
 
 /*
- * Main content
+ * Main pane
  */
-
 .main {
   position: fixed;
   top:51px;
@@ -56,12 +61,23 @@ body {
   display:block;
 }
 
-.main .page-header {
-  margin-top: 0;
-}
-
 .CodeMirror {
   height: 100%;
   width: 100%;
   padding:0;
+}
+
+/*
+ * status bar
+ */
+.status-bar {
+  background-color: #222;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  padding: 5px;
+  color: #fff;
+
 }
