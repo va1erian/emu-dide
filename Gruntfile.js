@@ -5,16 +5,26 @@ module.exports = function(grunt) {
     pkg: grunt.file.readJSON('package.json'),
 
     uglify: {
-      debug: {
+      codemirror: {
         options: {
           beautify: false,
-          mangle: true
+          mangle: false
         },
         files: {
           'build/pub/js/codemirror.js': 
             ['components/codemirror/lib/codemirror.js', 
              'components/codemirror/mode/javascript/javascript.js',
-             'components/codemirror/addon/selection/active-line.js']
+             'components/codemirror/addon/selection/active-line.js'],
+          
+        }
+      },
+      debug: {
+        options: {
+          beautify: true,
+          mangle: false
+        },
+        files: {
+          'build/pub/js/emu-dide.js': ['src/app/**/*.js']
         }
       }
     },
@@ -22,15 +32,14 @@ module.exports = function(grunt) {
     copy: {
       debug: {
         files: {
-          'build/pub/js/augment.js': ['components/augment/augment.js'],
+          'build/pub/js/underscore.js': ['components/underscore/underscore.js'],
           'build/pub/js/bootstrap.js': ['components/bootstrap/dist/js/bootstrap.js'],
           'build/pub/js/jquery.js': ['components/jquery/dist/jquery.js'],
-          'build/pub/js/emu-dide.js' : ['src/app/emu-dide.js'],
           'build/pub/css/bootstrap.css': ['components/bootstrap/dist/css/bootstrap.css'],
           'build/pub/css/bootstrap-theme.css': ['components/bootstrap/dist/css/bootstrap-theme.css'],
           'build/pub/css/codemirror.css' : ['components/codemirror/lib/codemirror.css'],
-          'build/index.html': ['src/app/index.html'],
-          'build/pub/css/emu-dide.css': ['src/app/css/emu-dide.css']
+          'build/index.html': ['src/view/index.html'],
+          'build/pub/css/emu-dide.css': ['src/view/css/emu-dide.css']
         }
       }
     },
@@ -49,7 +58,7 @@ module.exports = function(grunt) {
 
     watch: {
       files: ['src/**/*.js', 'src/**/*.html', 'src/**/*.css'],
-      tasks: ['jshint:all', 'copy:debug'],
+      tasks: ['jshint:all', 'uglify:debug', 'copy:debug'],
       options : {
         livereload: true
       }
@@ -70,7 +79,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-clean');
 
-  grunt.registerTask('build', ['jshint:all','uglify:debug','copy:debug']);
+  grunt.registerTask('build', ['jshint:all','uglify:debug', 'uglify:codemirror', 'copy:debug']);
   grunt.registerTask('debug-serve', ['connect:server', 'watch']);
   grunt.registerTask('default', ['clean']);
 };
