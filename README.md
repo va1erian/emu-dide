@@ -6,23 +6,23 @@ emulator for the DIDE architecture as seen in our Architecture classes at Polyte
 
 ##Building the project
 
-The build system is based on grunt, which in turn require nodejs.
+The build system is based on Grunt, which in turn requires nodejs.
 
 First, install nodejs using the installer avaiable on the [official site](http://nodejs.org/). 
 
-Next, install Grunt and Bower globally. Bower is used for dependency management.
+Next, install Grunt and Bower globally. Bower is used for runtime dependencies management.
 
 ```
 npm install grunt-cli -g
 npm install bower -g
 ```
 
-Clone the repository using your favorite git client. You can then install the additional dependancies by running the approriate command in the project repertory.
+Clone the repo  using your favorite git client. You can then install the additional dependencies by running the approriates command in the project directory.
 
 ```
 npm install
 bower install
 ```
 
-To build the project, simply use Grunt's build multi-task.
+To build the project, simply use Grunt's ``build'' multi-task.
 
