@@ -1,21 +1,25 @@
 
 /* Move down content because we have a fixed navbar that is 50px tall */
 body {
-  padding-top: 50px;
-  
+  padding-top: 53px;
 }
 
+.navbar {
+    border-bottom: 2px solid #710000;
+
+}
+
+.navbar .container-fluid {
+  padding-left: 0;
+}
 .nav a {
   text-transform: uppercase;
-}
-.navbar-brand {
-  font-size: 1.6em;
   font-weight: bold;
-  
 }
+
 .side-pane {
     position: fixed;
-    top: 51px;
+    top: 53px;
     bottom: 0;
     right: 0;
     width: 400px;
@@ -36,6 +40,8 @@ body {
 #emulator-pane .panel-heading {
   margin: 0;
   padding: 4px;
+  color: #710000;
+;
 }
 #emulator-pane .panel-title {
   font-size: 0.8em;
@@ -52,7 +58,7 @@ body {
  */
 .main {
   position: fixed;
-  top:51px;
+  top:53px;
   bottom: 0;
   left:0;
   padding: 0;
