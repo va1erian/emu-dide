@@ -2,3 +2,5 @@ build/
 components/
 node_modules/
 thumbs.db
+/nbproject/private/
+/nbproject/
