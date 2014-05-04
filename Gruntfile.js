@@ -9,7 +9,7 @@ module.exports = function(grunt) {
         options: {
           beautify: false,
           mangle: false,
-          sourceMap: true
+          sourceMap: false
         },
         files: {
           'build/pub/js/codemirror.js': 
@@ -23,7 +23,8 @@ module.exports = function(grunt) {
         options: {
           beautify: true,
           mangle: false,
-          sourceMap: true
+          sourceMap: true,
+          sourceMapIncludeSources : true
         },
         files: {
           'build/pub/js/emu-dide.js': ['src/app/**/*.js']
@@ -83,6 +84,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-clean');
 
   grunt.registerTask('build', ['jshint:all','uglify:debug', 'uglify:codemirror', 'copy:debug']);
-  grunt.registerTask('debug-serve', ['connect:server', 'watch']);
+  grunt.registerTask('debug-serve', ['build', 'connect:server', 'watch']);
   grunt.registerTask('default', ['clean']);
 };

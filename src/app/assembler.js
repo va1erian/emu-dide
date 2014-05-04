@@ -26,13 +26,20 @@ Assembler = (function() {
 
     var ASSEMBLER_DIRECTIVES = ['BYTE', 'WORD', 'DEFINE'];
     var EXECUTABLE_SIZE = 19456; // In 32-bit word
+    var EXECUTABLE_BASE = 1024;  //In 32-bit word
     var REG_COUNT = 32;
     var SPACE_COMMA_SPLIT = /[\s,]+/;
 
     //Convert a register identifier to a number
     // like "R12" -> 12
+    // do a simple cast if there is no character 
     function parseReg(identifier) {
-        return parseInt(identifier.slice(1));
+        var firstChar = identifier.charAt(0);
+        if(firstChar.toLowerCase() !== 'r') {
+            return parseInt(identifier);
+        } else {
+            return parseInt(identifier.slice(1));
+        }
     }
 
     //Parse the base + offset field for format type 2 instructions
@@ -170,33 +177,55 @@ Assembler = (function() {
                 break;
         }
     }
-
+    
+    //Calculate and return the size in word of the given instruction line
+    function calculateInstructionSize(line) {
+        if(!line) {
+            return 0;
+        }
+        
+        var tokens = line.trim().split(SPACE_COMMA_SPLIT);
+        console.log(line, tokens);
+        if(_.has(DIDE_INSTRUCTIONS, tokens[0])) {
+            return 1;
+        } else if (tokens[0] === '.WORD') {
+            return tokens.length - 1;
+        }
+        
+    }
+    
     //add the found label on the given line
     //to the 'labels' object.  
     //index should be the line number.
-    function getLabel(labels, line, index) {
-        if (!line)
+    //labelContext contains the memory cursor and the labels
+    function getLabel(labelContext, line, index) {
+        if (!line) {
             return; //ignore empty line
-
+        }
+        
         var colonPos = line.indexOf(':'),
-                tokens;
+                tokens,
+                instruction;
 
-        if (colonPos === -1)
-            return; //no colon, no labels, ignore line
-
+        if (colonPos === -1) {
+            labelContext.memCursor += calculateInstructionSize(line);
+            return; //no label here, we still update the memoryCursor
+        } else {
+            instruction = line.substring(colonPos + 1);
+            labelContext.memCursor += calculateInstructionSize(instruction);
+        }
+        
+        //check if the label contains space
         tokens = line.substr(0, colonPos).split(' ');
 
         if (tokens.length > 2) {
-            //more than 2 tokens means there
-            //is a space somewhere. Labels shouldn't contain spaces.
             throw new pub.AssemblerException(index + 1, 'Invalid label');
-        } else if (_.contains(DIDE_INSTRUCTIONS, tokens[0])) {
-            //labels cannot use an instruction name
+        } else if (_.has(DIDE_INSTRUCTIONS, tokens[0])) {
             throw new pub.AssemblerException(index + 1, 'Label cannot use an instruction name');
-        }else if (labels.hasOwnProperty(tokens[0])) {
+        }else if (labelContext.labels.hasOwnProperty(tokens[0])) {
             throw new pub.AssemblerException(index + 1, "Multiple definitions of label " + tokens[0]);
         } else {
-            Object.defineProperty(labels, tokens[0], {value: index});
+            Object.defineProperty(labelContext.labels, tokens[0], {value: labelContext.memCursor});
         }
     }
 
@@ -218,14 +247,14 @@ Assembler = (function() {
                 return line.substr(0, commentTokenPos).trim();
         });
 
-        var labels = {};
-        var emitter = new CodeEmitter();
+        var labelContext = { memCursor: EXECUTABLE_BASE, labels : {} };
         //label lookup
-        _.each(lines, _.partial(getLabel, labels, _));
-        console.log(labels);
-        //assembly phase
-        _.each(lines, _.partial(assembleLine, emitter, _));
+        _.each(lines, _.partial(getLabel, labelContext,  _));
+        console.log(labelContext);
         
+        //assembly phase
+        var emitter = new CodeEmitter();
+        _.each(lines, _.partial(assembleLine, emitter, _));
         console.log(emitter.getCodeObj());
     };
 
