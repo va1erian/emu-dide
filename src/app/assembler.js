@@ -128,7 +128,7 @@ Assembler = (function() {
         tokens = line.split(SPACE_COMMA_SPLIT);
 
         if (!_.has(DIDE_INSTRUCTIONS, tokens[0])) {
-            throw new pub.AssemblerException(index + 1, 'Unknown instruction ' + tokens[0]);
+            throw new pub.AssemblerException(index, 'Unknown instruction ' + tokens[0]);
         }
         
         switch (DIDE_INSTRUCTIONS[tokens[0]].format) {
@@ -139,7 +139,7 @@ Assembler = (function() {
                 
                 if( rDest >= REG_COUNT || rDest < 0 || regA >= REG_COUNT || regA < 0 || 
                         regB >= REG_COUNT || regB < 0) {
-                    throw new pub.AssemblerException(index + 1, 'invalid register index');
+                    throw new pub.AssemblerException(index, 'invalid register index');
                 }
                 
                 emitter.emitF1Instruction(
@@ -154,11 +154,11 @@ Assembler = (function() {
                 
                 if( rDest >= REG_COUNT || rDest < 0|| fieldData.register >= REG_COUNT ||
                         fieldData.register < 0) {
-                    throw new pub.AssemblerException(index + 1, 'invalid register index');
+                    throw new pub.AssemblerException(index, 'invalid register index');
                 } 
                 
                 if(fieldData.offset > 0xFFFF || fieldData.offset < 0) {
-                    throw new pub.AssemblerException(index + 1, 'invalid offset');
+                    throw new pub.AssemblerException(index, 'invalid offset');
                 }
 
                 emitter.emitF2Instruction(
@@ -219,21 +219,21 @@ Assembler = (function() {
         tokens = line.substr(0, colonPos).split(' ');
 
         if (tokens.length > 2) {
-            throw new pub.AssemblerException(index + 1, 'Invalid label');
+            throw new pub.AssemblerException(index, 'Invalid label');
         } else if (_.has(DIDE_INSTRUCTIONS, tokens[0])) {
-            throw new pub.AssemblerException(index + 1, 'Label cannot use an instruction name');
+            throw new pub.AssemblerException(index, 'Label cannot use an instruction name');
         }else if (labelContext.labels.hasOwnProperty(tokens[0])) {
-            throw new pub.AssemblerException(index + 1, "Multiple definitions of label " + tokens[0]);
+            throw new pub.AssemblerException(index, "Multiple definitions of label " + tokens[0]);
         } else {
             Object.defineProperty(labelContext.labels, tokens[0], {value: labelContext.memCursor});
         }
     }
 
     pub.AssemblerException = function(line, message) {
-        this.value = line;
+        this.line = line;
         this.message = message;
         this.toString = function() {
-            return 'Assembly exception at line ' + this.value + ': ' + this.message;
+            return 'Assembly error at line ' + (this.line + 1) + ': ' + this.message;
         };
     };
  

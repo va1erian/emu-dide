@@ -7,12 +7,32 @@ UI = (function() {
     var pub = {}, //public symbols
             editor;
 
+
+    function markErroneousLine(lineNo) {
+        editor.addLineClass(lineNo, 'background', 'erroneous-line');
+    }
+    
+    function setStatusBarError(message) {
+        $('#status-bar').html(message).addClass('error');
+        setTimeout(function() { $('#status-bar').removeClass('error');}, 500);
+    }
+    
+    function setStatusBarMessage(message) {
+        $('#status-bar').html(message);
+    }
+    
     var toolbarClickBindings = {
         '#newTbBtn': function() {
             editor.setValue('\n');
         },
         '#runTbBtn': function() {
-            Assembler.assemble(editor.getValue());
+            try {
+                Assembler.assemble(editor.getValue());
+            } catch(e) {
+                console.log(e);
+                markErroneousLine(e.line);
+                setStatusBarError(e.toString());
+            }
         },
         '#debugTbBtn': function() {
             console.log('debug');
