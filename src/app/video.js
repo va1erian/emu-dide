@@ -1,6 +1,6 @@
 
-var MYWIDTH=128;
-var MYLENGTH=96;
+var MYWIDTH=128*2;
+var MYLENGTH=96*2;
 
 function convertDwordToInt(nb){
 	
@@ -17,7 +17,7 @@ function convertDwordToInt(nb){
 }
 var memoireVideo=new Uint16Array(MYWIDTH*MYLENGTH);
 
-for(var i=0;i<memoireVideo.length;i++){
+for(var i=0;i<MYWIDTH*MYLENGTH;i++){
 	memoireVideo[i]=Math.floor(Math.random() * (65535));
 }
 
@@ -26,9 +26,9 @@ for(var i=0;i<memoireVideo.length;i++){
 
 
 var c = document.getElementById( "video_canvas" );
-var longueur=document.getElementById( "video_canvas" ).width;
-var largeur=document.getElementById( "video_canvas" ).height;
-var scale = Math.min(MYWIDTH / longueur, MYLENGTH/ largeur);
+//var longueur=document.getElementById( "video_canvas" ).width;
+//var largeur=document.getElementById( "video_canvas" ).height;
+//var scale = Math.min(MYWIDTH / longueur, MYLENGTH/ largeur);
 
 //REISZER TOUT CA 
 var ctx = c.getContext("2d");
@@ -36,16 +36,39 @@ var ctx = c.getContext("2d");
 
 
 // Yeux
+
 var maChaine="";
+/*
+c.width=MYWIDTH;
+c.height=MYLENGTH;
 for(var i=0;i<memoireVideo.length;i++){
 	var pixel=convertDwordToInt(memoireVideo[i]);
 	ctx.fillStyle = "rgb("+pixel[0]+","+pixel[1]+","+pixel[2]+")";
-	var x=Math.floor(i/MYLENGTH);
-	var y=Math.floor(i%MYLENGTH);
+	var x=Math.floor(i/(MYLENGTH));
+	var y=Math.floor(i%(MYLENGTH));
+	
+		x=x+1;
+	
+		y=y+1;
 	maChaine+="=> "+x+":"+y+" \n";
-	ctx.fillRect(x,y,1,1);
+	ctx.fillRect(x,y,2,2);
+}
+*/
+c.width=MYWIDTH;
+c.height=MYLENGTH;
+
+var i=0;
+for(var x=0;x<MYWIDTH;x=x+2){
+	for(var y=0;y<MYLENGTH;y=y+2){
+		var pixel=convertDwordToInt(memoireVideo[i]);
+		ctx.fillStyle = "rgb("+pixel[0]+","+pixel[1]+","+pixel[2]+")";
+		maChaine+="=> "+x+":"+y+" \n";
+		ctx.fillRect(x,y,2,2);
+		i++;
+	}
+	i++;
 }
 
-lines = maChaine.split("=>");
-var lastLine = lines.pop();
+//lines = maChaine.split("=>");
+//var lastLine = lines.pop();
 
