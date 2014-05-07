@@ -7,6 +7,8 @@
    $(document).ready( function() {
 
       UI.init();
+      Video.init();
+      Video.drawBuffer(Video.generateTestBuffer());
    });
 
 })();
