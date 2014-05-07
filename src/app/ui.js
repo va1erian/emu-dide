@@ -13,13 +13,11 @@ UI = (function() {
       },
 
       '#runTbBtn': function() {
-         Assembler.assemble(editor.getValue());
+         //Assembler.assemble(editor.getValue());
+         Emulator.run();
       },
-      '#debugTbBtn': function() {
-         console.log('debug');
-      },
-      '#settingsTbBtn': function() {
-         console.log('settings');
+      '#pauseTbBtn': function() {
+         Emulator.halt();
       }
    };
 
@@ -39,6 +37,7 @@ UI = (function() {
             $(id).on('click',cb);
          });
 
+         $(Emulator).bind('stateChange', function() { console.log('state changed');});
    };
 
    return pub;
