@@ -1,3 +1,0 @@
-grunt  : clean
-grunt build  :build
-grunt debug-serve : mode super codeur de la mort
