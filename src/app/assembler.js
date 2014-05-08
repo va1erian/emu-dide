@@ -256,6 +256,8 @@ Assembler = (function() {
         var emitter = new CodeEmitter();
         _.each(lines, _.partial(assembleLine, emitter, _));
         console.log(emitter.getCodeObj());
+        
+        return emitter.getCodeObj();
     };
 
     return pub;
