@@ -27,7 +27,9 @@ UI = (function() {
         },
         '#runTbBtn': function() {
             try {
-                Assembler.assemble(editor.getValue());
+                var tmpProg = Assembler.assemble(editor.getValue());
+                Emulator.loadProgram(tmpProg);
+                Emulator.step();
             } catch(e) {
                 console.log(e);
                 markErroneousLine(e.line);
@@ -65,8 +67,7 @@ UI = (function() {
         
     };
 
-         $(Emulator).bind('stateChange', function() { console.log('state changed');});
-   };
+    $(Emulator).bind('stateChange', function() { console.log('state changed');});
 
    return pub;
 })();

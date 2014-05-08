@@ -6,6 +6,8 @@ Emulator = (function() {
     'use strict';
 
     var MEMORY_SIZE = 32768 * 4;
+    var PROGRAM_OBJ_SIZE = 77824;
+    var PROGRAM_OFFSET = 4096;
 
     var CPU_STATE = {
         HALTED: 0, RUNNING: 1, PAUSED: 2
@@ -14,14 +16,11 @@ Emulator = (function() {
     var pub = {}; //public symbols
 
     var registers = new Array(32); // 32 registers of 32 bit
-
     var statusRegister;
-
-    // give the address of current instruction
     var programCounter;
 
     var buffer = new ArrayBuffer(MEMORY_SIZE);
-    var memory = new Uint32Array(buffer);
+    var memory = new DataView(buffer);
 
     var state;
 
@@ -31,7 +30,7 @@ Emulator = (function() {
         for (i = 0; i < registers.length; i++) {
             registers[i] = 0;
         }
-        programCounter = 0x00007000;
+        programCounter = 0x00001000;
         statusRegister = 0;
 
         for (i = 0; i < memory.length; i++) {
@@ -43,22 +42,58 @@ Emulator = (function() {
     // TODO : Copie du programme depuis l'assembleur puis recopie dans la mémoire
 
     pub.loadProgram = function(program) {
-        memory.set(program, 77824);
+        for (var i = PROGRAM_OFFSET; i < (PROGRAM_OBJ_SIZE + PROGRAM_OFFSET); i = i + 4){
+            writeWord(i, program[(i-PROGRAM_OFFSET)/4]);
+        }
     };
 
+    function readWord(offset) {
+        return memory.getUint32(offset, true);
+    }
+    
+    function writeWord(offset, word) {
+        memory.setUint32(offset, word, true);
+    }
+    
     function fetch() {
-        return memory[programCounter / 4];
+        return readWord(programCounter);
     }
 
     function decode(instruction) {
-        /*
-         extraire different champs
-         on reçoit 32 bit --> décalage de bit pour récuperer les champs
-         renvoyer objet anonyme (avec codeOp etc...)
-         */
+        var format, codop, rD, rA, rB, imm;
+        
+        /*Check the first 2 bits*/
+        if((instruction >> 30) === 3){
+            format = 3;
+        }
+        else if(((instruction & ~0xF8000000 ) >> 26) === 1){
+            format = 2;
+        } else{
+            format = 1;
+        }
+        
+        codop = instruction >> 27;
+        
+        if(format === 3) {
+            imm = (instruction & ~0xF8000000);
+        } else {
+            rD = (instruction & ~0xFC000000 ) >> 21;
+            rA = (instruction & ~0xFFE00000 ) >> 16; 
+            if(format === 1) {
+                rB = (instruction & ~0xFFFF0000 ) >> 11;
+            } else {
+                imm = (instruction & ~0xFFFF0000);
+            }
+        }
+        
+        return { 'codop' : codop, 'rD' : rD,
+                 'rA' : rA, 'rB' : rB, 'imm' : imm,
+                 'format' : format};
     }
 
-    function execute() {
+    function execute(decoded) {
+        console.log(decoded);
+        
         /*
          créer une fonction pour chaque champs
          */
@@ -116,7 +151,6 @@ Emulator = (function() {
       //todo  
     };
     
-    //Put a word in memory
     pub.poke = function(address, value) {
         //todo
     };
