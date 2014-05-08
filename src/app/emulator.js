@@ -121,8 +121,5 @@ Emulator = (function() {
         //todo
     };
 
-
-
-
     return pub;
 })();
