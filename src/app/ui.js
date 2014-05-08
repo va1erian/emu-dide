@@ -58,6 +58,7 @@ UI = (function() {
             $(id).on('click', cb);
         });
 
+        setStatusBarMessage("Welcome to EMU-DIDE");
     };
 
     pub.setStatusMessage = function(message) {
