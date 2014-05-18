@@ -31,9 +31,13 @@ UI = (function() {
                 Emulator.loadProgram(tmpProg);
                 Emulator.step();
             } catch(e) {
-                console.log(e);
-                markErroneousLine(e.line);
-                setStatusBarError(e.toString());
+                if(e instanceof Assembler.AssemblerException) {
+                    markErroneousLine(e.line);
+                    setStatusBarError(e.toString());
+                } else {
+                    setStatusBarError('Sorry, an error occured. Try again later.');
+                    throw e;
+                }
             }
         },
         '#debugTbBtn': function() {

@@ -32,7 +32,7 @@ Assembler = (function() {
         'CMPI': {
             format: 2, 
             opcode: 0x02,
-            tokensOrder: {regD: undefined, regA: 1, regB: 2}
+            tokensOrder: {regD: undefined, regA: 1, imm: 2}
         },
         'AND': {
             format: 1,
@@ -67,7 +67,7 @@ Assembler = (function() {
         'LUI': {
             format: 2, 
             opcode: 0x07,
-            tokensOrder: {regD: 1, regA: undefined, regB: 2}
+            tokensOrder: {regD: 1, regA: undefined, imm: 2}
         },
         'SLL': {
             format: 2,
@@ -87,12 +87,12 @@ Assembler = (function() {
         'LOAD': {
             format: 2,
             opcode: 0x10,
-            tokensOrder: {regD: 1, regA: 3, imm: 2}
+            tokensOrder: {regD: 1, regA: 3, imm: 2, baseOffsetMode: true}
         },
         'STORE': {
             format: 2,
             opcode: 0x11,
-            tokensOrder: {regD: 1, regA: 3, imm: 2}
+            tokensOrder: {regD: 1, regA: 3, imm: 2, baseOffsetMode : true}
         },
         'BE': {
             format: 3,
@@ -136,8 +136,8 @@ Assembler = (function() {
     };
 
     var ASSEMBLER_DIRECTIVES = ['BYTE', 'WORD', 'DEFINE'];
-    var EXECUTABLE_SIZE = 19456; // In 32-bit word
-    var EXECUTABLE_BASE = 1024;  //In 32-bit word
+    var EXECUTABLE_SIZE = 19456 * 4; 
+    var EXECUTABLE_BASE = 4096;  
     var REG_COUNT = 32;
     var SPACE_COMMA_SPLIT = /[\s,]+/;
 
@@ -165,18 +165,18 @@ Assembler = (function() {
             output.offset = 0;
         } else {
             var offsetStr = field.substring(0, parenPos);
-            var regStr = field.slice(parenPos, -1);
+            var regStr = field.slice(parenPos + 1, -1);
             output.offset = parseInt(offsetStr);
             output.register = parseReg(regStr);
         }
-
         return output;
     }
 
 
     //CodeEmitter object type 
     function CodeEmitter() {
-        this.codeObj = new Uint32Array(EXECUTABLE_SIZE);
+        this.codeObjBuf  = new ArrayBuffer(EXECUTABLE_SIZE);
+        this.codeObjView = new DataView(this.codeObjBuf);
         this.cursor = 0;
     }
 
@@ -185,11 +185,11 @@ Assembler = (function() {
         emitF1Instruction: function(opcode, regDest, regA, regB) {
             var word = 0;
             word |= (opcode  << 27);
-            word |= (regDest << 26);
+            word |= (regDest << 21);
             word |= (regA    << 16);
             word |= (regB    << 11);
-            this.codeObj[this.cursor] = word;
-            this.cursor++;
+            this.codeObjView.setUint32(this.cursor, word, true);
+            this.cursor += 4;
         },
         emitF2Instruction: function(opcode, regDest, regA, imm) {
             var word = 0;
@@ -198,22 +198,22 @@ Assembler = (function() {
             word |= (regDest << 21);
             word |= (regA    << 16);
             word |= imm;
-            this.codeObj[this.cursor] = word;
-            this.cursor++;            
+            this.codeObjView.setUint32(this.cursor, word, true);
+            this.cursor += 4;
         },
         emitF3Instruction: function(opcode, imm) {
            var word = 0;
            word |= (opcode << 27);
            word |= imm;
-           this.codeObj[this.cursor] = word;
-           this.cursor++;
+            this.codeObjView.setUint32(this.cursor, word, true);
+            this.cursor += 4;
         },
         emitWord: function(word) {
-           this.codeObj[this.cursor] = word;
-           this.cursor++;
+            this.codeObjView.setUint32(this.cursor, word, true);
+            this.cursor += 4;
         },
         getCodeObj: function() {
-            return this.codeObj; 
+            return new Uint32Array(this.codeObjBuf); 
         }
     };
 
@@ -224,7 +224,9 @@ Assembler = (function() {
         var tokens, 
             rDest,
             regA,
-            regB;
+            regB,
+            imm,
+            instr;
         var colonPos = line.indexOf(':');
 
         if (colonPos !== -1) {
@@ -237,51 +239,67 @@ Assembler = (function() {
         }
         
         tokens = line.split(SPACE_COMMA_SPLIT);
-
-        if (!_.has(DIDE_INSTRUCTIONS, tokens[0])) {
+        if (!(tokens[0] in DIDE_INSTRUCTIONS)) {
             throw new pub.AssemblerException(index, 'Unknown instruction ' + tokens[0]);
         }
         
-        switch (DIDE_INSTRUCTIONS[tokens[0]].format) {
+        instr = DIDE_INSTRUCTIONS[tokens[0]];
+        
+        switch (instr.format) {
             case 1: // dest , rega , regb
-                rDest = parseReg(tokens[DIDE_INSTRUCTIONS[tokens[0]].tokensOrder.regD]);
-                regA  = parseReg(tokens[DIDE_INSTRUCTIONS[tokens[0]].tokensOrder.regA]);
-                regB  = parseReg(tokens[DIDE_INSTRUCTIONS[tokens[0]].tokensOrder.regB]);
+                if(instr.tokensOrder.regD === undefined) {
+                    rDest = 0;
+                } else {
+                    rDest = parseReg(tokens[instr.tokensOrder.regD]);
+                }
+                
+                regA  = parseReg(tokens[instr.tokensOrder.regA]);
+                regB  = parseReg(tokens[instr.tokensOrder.regB]);
                 
                 if( rDest >= REG_COUNT || rDest < 0 || regA >= REG_COUNT || regA < 0 || 
                         regB >= REG_COUNT || regB < 0) {
                     throw new pub.AssemblerException(index, 'invalid register index');
                 }
                 
-                emitter.emitF1Instruction(
-                        DIDE_INSTRUCTIONS[tokens[0]].opcode,
-                        rDest,
-                        regA,
-                        regB);
+                emitter.emitF1Instruction( instr.opcode, rDest, regA, regB);
                 break;
             case 2: // dest, rega, imm
-                rDest = parseReg(tokens[DIDE_INSTRUCTIONS[tokens[0]].tokensOrder.regD]);
-                var fieldData = parseBaseOffsetField(tokens[2]);
+                var fieldData;
                 
-                if( rDest >= REG_COUNT || rDest < 0 || fieldData.register >= REG_COUNT ||
-                        fieldData.register < 0) {
+                if(instr.tokensOrder.regD === undefined) {
+                    rDest = 0;
+                } else {
+                    rDest = parseReg(tokens[instr.tokensOrder.regD]);
+                }
+                
+                if('baseOffsetMode' in instr.tokensOrder) {
+                    fieldData = parseBaseOffsetField(tokens[2]);
+                    imm       = fieldData.offset;
+                    regA      = fieldData.register;
+                } else if( instr.tokensOrder.regA === undefined ) {
+                    // LUI instruction does not use reg A field
+                    // and treats the imm field as a register
+                    imm  = parseInt(tokens[instr.tokensOrder.imm]);
+                    regA = 0;
+                    
+                } else {
+                    imm  = parseInt(tokens[instr.tokensOrder.imm]);
+                    regA = parseReg(tokens[instr.tokensOrder.regA]);
+                }
+                
+                if( rDest >= REG_COUNT || rDest < 0 || regA >= REG_COUNT ||
+                        regA < 0) {
                     throw new pub.AssemblerException(index, 'invalid register index');
                 } 
                 
-                if(fieldData.offset > 0xFFFF || fieldData.offset < 0) {
+                if(imm > 0xFFFF || imm < 0) {
                     throw new pub.AssemblerException(index, 'invalid offset');
                 }
 
-                emitter.emitF2Instruction(
-                        DIDE_INSTRUCTIONS[tokens[0]].opcode,
-                        rDest,
-                        fieldData.register,
-                        fieldData.offset);
+                emitter.emitF2Instruction(instr.opcode, rDest, regA, imm);
                 break;
             case 3: // imm
-                emitter.emitF3Instruction(
-                        DIDE_INSTRUCTIONS[tokens[0]].opcode,
-                        parseInt(tokens[1]));
+                emitter.emitF3Instruction( instr.opcode, parseInt(tokens[1]));
                 break;
             default:
                 console.log('oops! Incorrect instruction format type');
@@ -297,10 +315,10 @@ Assembler = (function() {
         
         var tokens = line.trim().split(SPACE_COMMA_SPLIT);
         console.log(line, tokens);
-        if(_.has(DIDE_INSTRUCTIONS, tokens[0])) {
-            return 1;
+        if(tokens[0] in DIDE_INSTRUCTIONS) {
+            return 4;
         } else if (tokens[0] === '.WORD') {
-            return tokens.length - 1;
+            return (tokens.length  - 1) * 4;
         }
         
     }
