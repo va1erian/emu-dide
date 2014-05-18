@@ -7,6 +7,9 @@
    $(document).ready( function() {
 
       UI.init();
+      Emulator.reset();
+      Video.init();
+      Video.drawBuffer(Video.generateTestBuffer());
    });
 
 })();

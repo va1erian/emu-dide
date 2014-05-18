@@ -1,6 +1,6 @@
 /*
- EMU-DIDE - UI management module
- */
+   EMU-DIDE - UI management module
+*/
 
 UI = (function() {
     'use strict';
@@ -27,7 +27,9 @@ UI = (function() {
         },
         '#runTbBtn': function() {
             try {
-                Assembler.assemble(editor.getValue());
+                var tmpProg = Assembler.assemble(editor.getValue());
+                Emulator.loadProgram(tmpProg);
+                Emulator.step();
             } catch(e) {
                 console.log(e);
                 markErroneousLine(e.line);
@@ -58,11 +60,14 @@ UI = (function() {
             $(id).on('click', cb);
         });
 
+        setStatusBarMessage("Welcome to EMU-DIDE");
     };
 
     pub.setStatusMessage = function(message) {
         
     };
 
-    return pub;
+    $(Emulator).bind('stateChange', function() { console.log('state changed');});
+
+   return pub;
 })();
