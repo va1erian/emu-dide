@@ -194,7 +194,7 @@ Assembler = (function() {
         emitF2Instruction: function(opcode, regDest, regA, imm) {
             var word = 0;
             word |= (opcode << 27);
-            word |= (1 << 22);
+            word |= (1 << 26);
             word |= (regDest << 21);
             word |= (regA    << 16);
             word |= imm;
@@ -367,6 +367,8 @@ Assembler = (function() {
         var emitter = new CodeEmitter();
         _.each(lines, _.partial(assembleLine, emitter, _));
         console.log(emitter.getCodeObj());
+        
+        return emitter.getCodeObj();
     };
 
     return pub;
