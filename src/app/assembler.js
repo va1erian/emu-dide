@@ -7,21 +7,132 @@ Assembler = (function() {
 
     var pub = {}; //public symbols
 
-    //DIDE instruction set, their format type, and opcode
+    //DIDE instruction set, their format type, their token order and opcode
     var DIDE_INSTRUCTIONS = {
-        'ADD': {format: 1, opcode: 0x00}, 'ADDI': {format: 2, opcode: 0x00},
-        'SUB': {format: 1, opcode: 0x01}, 'SUBI': {format: 2, opcode: 0x01},
-        'CMP': {format: 1, opcode: 0x02}, 'CMPI': {format: 2, opcode: 0x02},
-        'AND': {format: 1, opcode: 0x04}, 'ANDI': {format: 2, opcode: 0x04},
-        'XOR': {format: 1, opcode: 0x05}, 'XORI': {format: 2, opcode: 0x05},
-        'OR': {format: 1, opcode: 0x06},  'ORI': {format: 2, opcode: 0x06},
-        'LUI': {format: 2, opcode: 0x07}, 'SLL': {format: 2, opcode: 0x08},
-        'SAR': {format: 2, opcode: 0x09}, 'SLR': {format: 2, opcode: 0x0A},
-        'LOAD': {format: 2, opcode: 0x10},'STORE': {format: 2, opcode: 0x11},
-        'BE': {format: 3, opcode: 0x18},  'BGT': {format: 3, opcode: 0x19},
-        'BLE': {format: 3, opcode: 0x1A}, 'BGTU': {format: 3, opcode: 0x1B},
-        'BLEU': {format: 3, opcode: 0x1C},'BA': {format: 3, opcode: 0x1D},
-        'BC': {format: 3, opcode: 0x1E},  'BO': {format: 3, opcode: 0x1F}
+        'ADD': {
+            format: 1, 
+            opcode: 0x00, 
+            tokensOrder: {regD: 1, regA : 2, regB : 3} 
+            },
+        'ADDI': {
+            format: 2,
+            opcode: 0x00,
+            tokensOrder: {regD: 1, regA: 2, imm : 3} 
+        },
+        'SUB': {
+            format: 1,
+            opcode: 0x01,
+            tokensOrder: {regD: 1, regA: 2, regB: 3}
+        },
+        'CMP': {
+            format: 1, 
+            opcode: 0x02,
+            tokensOrder: {regD: undefined, regA: 1, regB: 2}
+        }, 
+        'CMPI': {
+            format: 2, 
+            opcode: 0x02,
+            tokensOrder: {regD: undefined, regA: 1, regB: 2}
+        },
+        'AND': {
+            format: 1,
+            opcode: 0x04,
+            tokensOrder: {regD: 1, regA : 2, regB : 3} 
+        },
+        'ANDI': {
+            format: 2,
+            opcode: 0x04,
+            tokensOrder: {regD: 1, regA : 2, imm : 3}
+        },
+        'XOR': {
+            format: 1, 
+            opcode: 0x05,
+            tokensOrder: {regD: 1, regA : 2, regB : 3}
+        }, 
+        'XORI': { 
+            format: 2, 
+            opcode: 0x05,
+            tokensOrder: {regD: 1, regA : 2, imm : 3}         
+        },
+        'OR': {
+            format: 1, 
+            opcode: 0x06,
+            tokensOrder: {regD: 1, regA : 2, regB : 3}         
+        },  
+        'ORI': {
+            format: 2,
+            opcode: 0x06,
+            tokensOrder: {regD: 1, regA : 2, regB : 3}
+        },
+        'LUI': {
+            format: 2, 
+            opcode: 0x07,
+            tokensOrder: {regD: 1, regA: undefined, regB: 2}
+        },
+        'SLL': {
+            format: 2,
+            opcode: 0x08,
+            tokensOrder: {regD: 1, regA: 3, imm: 2}
+        },
+        'SAR': {
+            format: 2, 
+            opcode: 0x09,
+            tokensOrder: {regD: 1, regA: 3, imm: 2}
+        },
+        'SLR': {
+            format: 2,
+            opcode: 0x0A,
+            tokensOrder: {regD: 1, regA: 3, imm: 2}
+        },
+        'LOAD': {
+            format: 2,
+            opcode: 0x10,
+            tokensOrder: {regD: 1, regA: 3, imm: 2}
+        },
+        'STORE': {
+            format: 2,
+            opcode: 0x11,
+            tokensOrder: {regD: 1, regA: 3, imm: 2}
+        },
+        'BE': {
+            format: 3,
+            opcode: 0x18,
+            tokensOrder: {imm: 1}
+        },  
+        'BGT': {
+            format: 3,
+            opcode: 0x19,
+            tokensOrder: {imm: 1}
+        },
+        'BLE': {
+            format: 3,
+            opcode: 0x1A,
+            tokensOrder: {imm: 1}
+        }, 
+        'BGTU': {
+            format: 3, 
+            opcode: 0x1B,
+            tokensOrder: {imm: 1}
+        },
+        'BLEU': {
+            format: 3,
+            opcode: 0x1C,
+            tokensOrder: {imm: 1}
+        },
+        'BA': {
+            format: 3,
+            opcode: 0x1D,
+            tokensOrder: {imm: 1}
+        },
+        'BC': {
+            format: 3, 
+            opcode: 0x1E,
+            tokensOrder: {imm: 1}
+        },  
+        'BO': {format: 3,
+            opcode: 0x1F,
+            tokensOrder: {imm: 1}
+        }
     };
 
     var ASSEMBLER_DIRECTIVES = ['BYTE', 'WORD', 'DEFINE'];
@@ -74,7 +185,7 @@ Assembler = (function() {
         emitF1Instruction: function(opcode, regDest, regA, regB) {
             var word = 0;
             word |= (opcode  << 27);
-            word |= (regDest << 21);
+            word |= (regDest << 26);
             word |= (regA    << 16);
             word |= (regB    << 11);
             this.codeObj[this.cursor] = word;
@@ -133,9 +244,9 @@ Assembler = (function() {
         
         switch (DIDE_INSTRUCTIONS[tokens[0]].format) {
             case 1: // dest , rega , regb
-                rDest = parseReg(tokens[1]);
-                regA  = parseReg(tokens[2]);
-                regB  = parseReg(tokens[3]);
+                rDest = parseReg(tokens[DIDE_INSTRUCTIONS[tokens[0]].tokensOrder.regD]);
+                regA  = parseReg(tokens[DIDE_INSTRUCTIONS[tokens[0]].tokensOrder.regA]);
+                regB  = parseReg(tokens[DIDE_INSTRUCTIONS[tokens[0]].tokensOrder.regB]);
                 
                 if( rDest >= REG_COUNT || rDest < 0 || regA >= REG_COUNT || regA < 0 || 
                         regB >= REG_COUNT || regB < 0) {
@@ -149,10 +260,10 @@ Assembler = (function() {
                         regB);
                 break;
             case 2: // dest, rega, imm
-                rDest = parseReg(tokens[1]);
+                rDest = parseReg(tokens[DIDE_INSTRUCTIONS[tokens[0]].tokensOrder.regD]);
                 var fieldData = parseBaseOffsetField(tokens[2]);
                 
-                if( rDest >= REG_COUNT || rDest < 0|| fieldData.register >= REG_COUNT ||
+                if( rDest >= REG_COUNT || rDest < 0 || fieldData.register >= REG_COUNT ||
                         fieldData.register < 0) {
                     throw new pub.AssemblerException(index, 'invalid register index');
                 } 
@@ -163,7 +274,7 @@ Assembler = (function() {
 
                 emitter.emitF2Instruction(
                         DIDE_INSTRUCTIONS[tokens[0]].opcode,
-                        parseReg(tokens[1]),
+                        rDest,
                         fieldData.register,
                         fieldData.offset);
                 break;
