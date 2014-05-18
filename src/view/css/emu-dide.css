@@ -32,6 +32,11 @@ body {
     border-left: 1px solid #eee;
 
 }
+
+.panel-body {
+    padding: 5px 10px 5px 10px;
+}
+
 #emulator-pane .panel {
   margin:0;
   padding:0;
@@ -52,6 +57,20 @@ body {
 #emulator-pane #memory-view-panel {
   overflow-y:auto;
 }
+
+
+#reg-viewer {
+    font-size: 12px;
+    font-family: Consolas, "Lucida Console",  Monaco, "DejaVu Sans Mono", "Courier New", sans-serif;
+}
+
+.reg-viewer-title {
+    font-weight: bold;
+}
+.reg-viewer-table {
+    width: 100%;
+}
+
 
 /*
  * Main pane

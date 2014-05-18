@@ -8,6 +8,7 @@
 
       UI.init();
       Emulator.reset();
+      Debugger.init();
       Video.init();
       Video.drawBuffer(Video.generateTestBuffer());
    });
