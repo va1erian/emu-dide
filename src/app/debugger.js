@@ -12,5 +12,14 @@ Debugger = (function() {
 
    }
 
+   pub.init = function() {
 
-});
+  $(".registre").editable("click", function(e){});
+
+  };
+
+   return pub;
+
+
+})();
+

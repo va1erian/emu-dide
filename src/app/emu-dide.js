@@ -9,6 +9,7 @@
       UI.init();
       Video.init();
       Video.drawBuffer(Video.generateTestBuffer());
+      Debugger.init();
    });
 
 })();

@@ -37,6 +37,7 @@ module.exports = function(grunt) {
           'build/pub/js/underscore.js': ['components/underscore/underscore.js'],
           'build/pub/js/bootstrap.js': ['components/bootstrap/dist/js/bootstrap.js'],
           'build/pub/js/jquery.js': ['components/jquery/dist/jquery.js'],
+          'build/pub/js/jquery-editable.js': ['components/jquery.editable/jquery.editable.js'],  
           'build/pub/css/bootstrap.css': ['components/bootstrap/dist/css/bootstrap.css'],
           'build/pub/css/bootstrap-theme.css': ['components/bootstrap/dist/css/bootstrap-theme.css'],
           'build/pub/css/codemirror.css' : ['components/codemirror/lib/codemirror.css'],
