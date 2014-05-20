@@ -7,10 +7,17 @@ UI = (function() {
     var pub = {}, //public symbols
             editor;
 
+    var lastErroneousLine = 0;
 
     function markErroneousLine(lineNo) {
-        editor.addLineClass(lineNo, 'background', 'erroneous-line');
+        lastErroneousLine = editor.getLineHandle(lineNo);
+        editor.addLineClass(lastErroneousLine, 'background', 'erroneous-line');
     }
+    
+    function clearErroneousLine() {
+        editor.removeLineClass(lastErroneousLine, 'background', 'erroneous-line');
+    }
+    
     
     function setStatusBarError(message) {
         $('#status-bar').html(message).addClass('error');
@@ -25,23 +32,28 @@ UI = (function() {
         '#newTbBtn': function() {
             editor.setValue('\n');
         },
-        '#runTbBtn': function() {
+        '#assembleTbBtn': function() {
+            clearErroneousLine();
             try {
                 var tmpProg = Assembler.assemble(editor.getValue());
                 Emulator.loadProgram(tmpProg);
-                Emulator.step();
+                setStatusBarMessage('Assembly phase succeeded, run the program.');
             } catch(e) {
                 if(e instanceof Assembler.AssemblerException) {
                     markErroneousLine(e.line);
                     setStatusBarError(e.toString());
                 } else {
-                    setStatusBarError('Sorry, an error occured. Try again later.');
+                    setStatusBarError('Sorry, an error occured. Try again later :^)');
                     throw e;
                 }
             }
         },
-        '#debugTbBtn': function() {
-            console.log('debug');
+       
+        '#runTbBtn': function() {
+            console.log('run');
+        },
+        '#stepTbBtn': function() {
+            Emulator.step();
         },
         '#settingsTbBtn': function() {
             console.log('settings');
@@ -70,8 +82,6 @@ UI = (function() {
     pub.setStatusMessage = function(message) {
         
     };
-
-    $(Emulator).bind('stateChange', function() { console.log('state changed');});
 
    return pub;
 })();

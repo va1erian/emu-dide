@@ -220,7 +220,7 @@ Assembler = (function() {
 
     //Assemble a single line by manipulating the code
     //emitter 
-    function assembleLine(emitter, line, index) {
+    function assembleLine(emitter, labelContext, line, index) {
         var tokens, 
             rDest,
             regA,
@@ -232,6 +232,11 @@ Assembler = (function() {
         if (colonPos !== -1) {
             //If there is label on the line, ignore it
             line = line.substr(colonPos + 1).trim();
+            labelContext.memCursor += calculateInstructionSize(line);
+
+        } else {
+            var instruction = line.substring(colonPos + 1);
+            labelContext.memCursor += calculateInstructionSize(instruction);
         }
 
         if (!line) {
@@ -299,6 +304,16 @@ Assembler = (function() {
                 emitter.emitF2Instruction(instr.opcode, rDest, regA, imm);
                 break;
             case 3: // imm
+                if(isNaN(tokens[1])) {
+                    //assuming it's a label
+                    if(!(tokens[1] in labelContext.labels)) {
+                        throw new pub.AssemblerException(index, 'Unknown label "' + tokens[1] + '"');
+                    } else {
+                        imm = labelContext.labels[tokens[1]] - labelContext.memCursor;
+                    }
+                } else {
+                    imm = parseInt(tokens[1]);
+                }
                 emitter.emitF3Instruction( instr.opcode, parseInt(tokens[1]));
                 break;
             default:
@@ -382,8 +397,9 @@ Assembler = (function() {
         console.log(labelContext);
         
         //assembly phase
+        labelContext.memCursor = EXECUTABLE_BASE;
         var emitter = new CodeEmitter();
-        _.each(lines, _.partial(assembleLine, emitter, _));
+        _.each(lines, _.partial(assembleLine,  emitter, labelContext, _));
         console.log(emitter.getCodeObj());
         
         return emitter.getCodeObj();

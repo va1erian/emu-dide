@@ -9,6 +9,14 @@ body {
 
 }
 
+.btn, input[type=text] {
+    border-radius: 2px;
+}
+
+.btn-default {
+    border: 1px solid #ecc9c9;
+}
+
 .navbar .container-fluid {
   padding-left: 0;
 }
@@ -59,11 +67,21 @@ body {
 }
 
 
-#reg-viewer {
+#reg-viewer, #mem-viewer {
     font-size: 12px;
+}
+
+#reg-viewer, .mem-viewer-output {
     font-family: Consolas, "Lucida Console",  Monaco, "DejaVu Sans Mono", "Courier New", sans-serif;
 }
 
+.mem-viewer-output {
+    padding: 8px;
+}
+
+#mem-viewer form input {
+    margin: 3px 0 3px 0;
+}
 .reg-viewer-title {
     font-weight: bold;
 }

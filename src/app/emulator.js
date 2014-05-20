@@ -8,14 +8,14 @@ Emulator = (function() {
     var MEMORY_SIZE = 32768 * 4;
     var PROGRAM_OBJ_SIZE = 77824;
     var PROGRAM_OFFSET = 4096;
-
+    var REG_COUNT = 32;
     var CPU_STATE = {
         HALTED: 0, RUNNING: 1, PAUSED: 2
     };
 
     var pub = {}; //public symbols
 
-    var registers = new Array(32); // 32 registers of 32 bit
+    var registers = new Array(REG_COUNT); // 32 registers of 32 bit
     var statusRegister;
     var programCounter;
 
@@ -24,28 +24,90 @@ Emulator = (function() {
 
     var state;
 
-    // reset the emulator
-    pub.reset = function() {
-        var i;
-        for (i = 0; i < registers.length; i++) {
-            registers[i] = 0;
-        }
-        programCounter = 0x00001000;
-        statusRegister = 0;
 
-        for (i = 0; i < memory.length; i++) {
-            memory[i] = 0;
+    var INSTRUCTIONS = {
+        '0': { //ADD, ADDI
+            f1: function(regD, regA, regB) {
+                registers[regD] = registers[regA] + registers[regB];
+                $(pub).trigger('regWrite');
+                programCounter += 4;
+            },
+            f2: function(regD, regA, imm) {
+                
+            }
+        },
+        '1': { //SUB, SUBI
+            f1: function(regD, regA, regB) {
+                
+            },
+            f2: function(regD, regA, imm) {
+                
+            }
+        },
+        '2': { //CMP, CMPI
+            f1: function(regD, regA, regB) {
+                
+            },
+            f2: function(regD, regA, imm) {
+                
+            }
+        },
+        '4': { //AND, ANDI
+            f1: function(regD, regA, regB) {
+                
+            },
+            f2: function(regD, regA, imm) {
+                
+            }
+        },
+        '5': { //XOR, XORI
+            f1: function(regD, regA, regB) {
+                
+            },
+            f2: function(regD, regA, imm) {
+                
+            }
+        },
+        '6': { //OR, ORI
+            f1: function(regD, regA, regB) {
+                
+            },
+            f2: function(regD, regA, imm) {
+                
+            }            
+        },
+        '7': { // LUI
+            f2: function(regD, regA, imm) {
+                registers[regD] = imm << 16;
+                $(pub).trigger('regWrite');
+                programCounter += 4;
+            }
+        },
+        '8': { // SLL
+            f2: function(regD, regA, imm) {
+                registers[regD] = registers[regA] << imm;
+                $(pub).trigger('regWrite');
+                programCounter += 4;
+            }
+        },
+        
+        '10': { //LOAD
+            f2: function(regD, regA, imm) {
+                registers[regD] = readWord(registers[regA] + imm);
+                $(pub).trigger('regWrite');
+                programCounter += 4;
+            }
+        },
+        '11': { // STORE
+            f2: function(regD, regA, imm) {
+                writeWord(registers[regD] + imm, registers[regA]);
+                $(pub).trigger('memWrite', [registers[regD] + imm]);
+                programCounter += 4;
+            }
         }
-        state = CPU_STATE.HALTED;
+        //TODO other instructions
     };
 
-    // TODO : Copie du programme depuis l'assembleur puis recopie dans la mémoire
-
-    pub.loadProgram = function(program) {
-        for (var i = PROGRAM_OFFSET; i < (PROGRAM_OBJ_SIZE + PROGRAM_OFFSET); i = i + 4){
-            writeWord(i, program[(i-PROGRAM_OFFSET)/4]);
-        }
-    };
 
     function readWord(offset) {
         return memory.getUint32(offset, true);
@@ -72,7 +134,7 @@ Emulator = (function() {
             format = 1;
         }
         
-        codop = instruction >> 27;
+        codop = instruction >>> 27; // We don't care about the sign
         
         if(format === 3) {
             imm = (instruction & ~0xF8000000);
@@ -91,26 +153,61 @@ Emulator = (function() {
                  'format' : format};
     }
 
-    function execute(decoded) {
+    function execute(decoded) { 
         console.log(decoded);
+        var opcodeHash = decoded.codop.toString(16);
         
-        /*
-         créer une fonction pour chaque champs
-         */
+        if(!(opcodeHash in INSTRUCTIONS)) {
+            console.log('Emulator error : Unrecognized opcode ', opcodeHash);
+        }
+        
+        switch(decoded.format) {
+            case 1:
+                INSTRUCTIONS[opcodeHash].f1(decoded.rD, decoded.rA, decoded.rB);
+                break;
+            case 2:
+                INSTRUCTIONS[opcodeHash].f2(decoded.rD, decoded.rA, decoded.imm);
+                break;
+        }
+        
+        console.log(registers);
+        console.log(programCounter);
     }
 
     function cycle() {
         var instruction = fetch();
         var decoded = decode(instruction);
         execute(decoded);
-        programCounter += 4;
 
-        $(pub).trigger('instructionExec');
+        Video.drawBuffer(pub.getFramebuffer());
         if (state === CPU_STATE.RUNNING) {
             setTimeout(cycle, 0); // schedule next cycle
         }
     }
 
+    // reset the emulator
+    pub.reset = function() {
+        var i;
+        for (i = 0; i < registers.length; i++) {
+            registers[i] = 0;
+        }
+        programCounter = 0x00001000;
+        statusRegister = 0;
+
+        for (i = 0; i < memory.length; i++) {
+            memory[i] = 0;
+        }
+        state = CPU_STATE.HALTED;
+    };
+
+    // TODO : Copie du programme depuis l'assembleur puis recopie dans la mémoire
+
+    pub.loadProgram = function(program) {
+        for (var i = PROGRAM_OFFSET; i < (PROGRAM_OBJ_SIZE + PROGRAM_OFFSET); i = i + 4){
+            writeWord(i, program[(i-PROGRAM_OFFSET)/4]);
+        }
+    };
+    
     pub.run = function() {
         if (state !== CPU_STATE.RUNNING) {
             state = CPU_STATE.RUNNING;
@@ -147,13 +244,21 @@ Emulator = (function() {
     };
     
     // return a slice of the main memory as a typed array
-    pub.readMem = function(begin, end) {
-      //todo  
+    pub.readMem = function() {
+      return new Uint32Array(buffer);
     };
     
-    pub.poke = function(address, value) {
-        //todo
+    pub.getFramebuffer = function() {
+        return new Uint16Array(buffer, 106496);
     };
+    
+    pub.peek = readWord;
+    
+    pub.poke = writeWord;
 
+
+    pub.REG_COUNT = REG_COUNT;
+    pub.MEMORY_SIZE  = MEMORY_SIZE;
+    
     return pub;
 })();
