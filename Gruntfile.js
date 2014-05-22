@@ -41,28 +41,32 @@ module.exports = function(grunt) {
           'build/pub/css/bootstrap.css': ['components/bootstrap/dist/css/bootstrap.css'],
           'build/pub/css/bootstrap-theme.css': ['components/bootstrap/dist/css/bootstrap-theme.css'],
           'build/pub/css/codemirror.css' : ['components/codemirror/lib/codemirror.css'],
-          'build/index.html': ['src/view/index.html'],
+          'build/emu-dide.html': ['src/view/index.html'],
           'build/pub/css/emu-dide.css': ['src/view/css/emu-dide.css'],
           'build/pub/img/logo.png': ['src/view/img/logo.png'],
         }
-      }
+      },
+        services: {
+            cwd: 'src/services',
+            src: '**/*',
+            dest: 'build/',
+            expand: true
+        }
     },
 
-    connect: {
-      server: {
+    php: {
+      services: {
         options:{
           port: 1337,
           base: 'build',
           hostname: 'localhost',
-          livereload: true,
-          open: true
         }
       }
     },
 
     watch: {
-      files: ['src/**/*.js', 'src/**/*.html', 'src/**/*.css'],
-      tasks: ['jshint:all', 'uglify:debug', 'copy:debug'],
+      files: ['src/**/*.js', 'src/**/*.html', 'src/**/*.css', 'src/**/*.php'],
+      tasks: ['jshint:all', 'uglify:debug', 'copy:debug', 'copy:services'],
       options : {
         livereload: true
       }
@@ -82,8 +86,8 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-clean');
-
-  grunt.registerTask('build', ['jshint:all','uglify:debug', 'uglify:codemirror', 'copy:debug']);
-  grunt.registerTask('debug-serve', ['build', 'connect:server', 'watch']);
+  grunt.loadNpmTasks('grunt-php');
+  grunt.registerTask('build', ['jshint:all','uglify:debug', 'uglify:codemirror', 'copy:debug', 'copy:services']);
+  grunt.registerTask('debug-serve', ['build', 'php:services', 'watch']);
   grunt.registerTask('default', ['clean']);
 };

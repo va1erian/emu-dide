@@ -57,7 +57,18 @@ UI = (function() {
         },
         '#settingsTbBtn': function() {
             console.log('settings');
+        },
+        
+        '#loginTbBtn': function() {
+            console.log('kek');
+            $.getJSON('/programs', function(data) {
+                console.log(data);
+            });
+            
+            $('#member-pane').fadeIn(300);
         }
+        
+        
     };
 
     pub.init = function() {

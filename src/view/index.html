@@ -34,8 +34,6 @@
                         <li><a id='assembleTbBtn'   href="#">Assemble</a></li>
                         <li><a id='runTbBtn'   href="#">Run</a></li>
                         <li><a id='stepTbBtn' href="#">Step</a></li>
-                        <li><a id='examplesTbBtn' href="#">Examples</a></li>
-                        <li><a id='helpTbBtn' href="#">Help</a></li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
                         <li class="navbar-right"><a id='loginTbBtn' href="#">Login</a></li>
@@ -45,7 +43,7 @@
         </div>
 
         <div class="emu-dide-container">
-            <div id="main" class="col-md-12 main" style="height:100%; min-height:100%;">
+            <div id="main" class="main">
                 <!-- CodeMirror goes here -->
             </div>
             <div id="emulator-pane" class="side-pane">
@@ -103,11 +101,51 @@
                                 </div>
                                 <div class="form-group">
                                     <input type="button" class="btn btn-default" value="Memory dump"/>
+                                </div>
                             </form>
                         </div>
                     </div>
                 </div>
 
+            </div>
+            <div id="member-pane" class="side-pane">
+                <h3> Your programs </h3>
+                <div class="member-pane-container">
+                <ul id="program-list">
+                    <li>                        
+                        <a class="btn btn-default btn-sm program-list-action"> Delete </a>
+                        <a class="btn btn-default btn-sm program-list-action"> Duplicate </a>
+                        
+                        <strong> lel lil lul </strong> <span class="program-date"> Last Updated 02/02/02</span>
+
+                    </li>
+                    <li>                        
+                        <div class="program-list-action"> Delete </div>
+                        <div class="program-list-action"> Duplicate </div>
+                        
+                        <strong> lel lil lul </strong> <span class="program-date"> Last Updated 02/02/02</span>
+
+                    </li>
+                    <li>                        
+                        <div class="program-list-action"> Delete </div>
+                        <div class="program-list-action"> Duplicate </div>
+                        
+                        <strong> lel lil lul </strong> <span class="program-date"> Last Updated 02/02/02</span>
+
+                    </li>
+                    <li>                        
+                        <div class="program-list-action"> Delete </div>
+                        <div class="program-list-action"> Duplicate </div>
+                        
+                        <strong> lel lil lul </strong> <span class="program-date"> Last Updated 02/02/02</span>
+
+                    </li>
+
+                </ul>
+                    <div class="well-sm"> <a class="btn btn-default btn-block"> <strong> Log out </strong> </a> 
+
+                     <a class="btn btn-default btn-block"> Delete Account </a> </div>
+                </div>
             </div>
         </div>
         <div id="status-bar">
@@ -124,6 +162,16 @@
             <% } %>
             </table>
         </script>
+        <script type="text/template" id="program-item-tmpl">
+            <li>                        
+                <a class="btn btn-default btn-sm program-list-action"> Delete </a>
+                <a class="btn btn-default btn-sm program-list-action"> Duplicate </a>
+
+                <strong> <%- program.name %> </strong> <span class="program-date"> Last Updated <%- program.lastUpdate %> </span>
+
+            </li>
+        </script>
+        
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
         <script src="pub/js/bootstrap.js"></script>
         <script src="pub/js/codemirror.js"></script>

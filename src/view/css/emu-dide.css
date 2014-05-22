@@ -1,7 +1,8 @@
 
 /* Move down content because we have a fixed navbar that is 50px tall */
 body {
-  padding-top: 53px;
+    padding-top: 53px;
+    padding-bottom: 30px;
 }
 
 .navbar {
@@ -13,22 +14,18 @@ body {
     border-radius: 2px;
 }
 
-.btn-default {
-    border: 1px solid #ecc9c9;
-}
-
 .navbar .container-fluid {
-  padding-left: 0;
+    padding-left: 0;
 }
 .nav a {
-  text-transform: uppercase;
-  font-weight: bold;
+    text-transform: uppercase;
+    font-weight: bold;
 }
 
 .side-pane {
     position: fixed;
     top: 53px;
-    bottom: 0;
+    bottom:30px;
     right: 0;
     width: 400px;
     z-index: 1000;
@@ -41,29 +38,90 @@ body {
 
 }
 
+#member-pane {
+    display: none;
+    z-index: 1000;
+    padding: 0;
+    overflow: hidden;
+}
+
+.member-pane-container {
+    background-color: white;
+    height:100%;
+}
+
+#member-pane h3 {
+    margin: 12px;
+    text-transform: uppercase;
+    color: #710000;
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+#program-list {
+    cursor: pointer;
+    overflow-y: auto;
+    list-style-type: none;
+    padding: 0;
+    margin:0;
+}
+
+#program-list li:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+#program-list li {
+    text-decoration: none;
+    display: block;
+    border-bottom: 1px solid #eee;
+    padding:8px;
+    margin:0;
+    color: #444;
+}
+
+#program-list li strong {
+    display: block;
+}
+
+.program-date {
+    font-style: italic;
+}
+
+.program-list-action {
+    float: right;
+    margin: 3px;
+    font-size: 0.8em;
+    padding: 3px;
+}
+
+
+#program-list li:hover {
+    background-color: #eee;
+}
+
 .panel-body {
     padding: 5px 10px 5px 10px;
 }
 
 #emulator-pane .panel {
-  margin:0;
-  padding:0;
-  border: 0;
+    margin:0;
+    padding:0;
+    border: 0;
 }
 #emulator-pane .panel-heading {
-  margin: 0;
-  padding: 4px;
-  color: #710000;
-;
+    margin: 0;
+    padding: 4px;
+    color: #710000;
+    ;
 }
 #emulator-pane .panel-title {
-  font-size: 0.8em;
-  text-transform: uppercase;
-  font-weight: bold;
+    font-size: 0.8em;
+    text-transform: uppercase;
+    font-weight: bold;
 }
 
 #emulator-pane #memory-view-panel {
-  overflow-y:auto;
+    overflow-y:auto;
 }
 
 
@@ -94,19 +152,20 @@ body {
  * Main pane
  */
 .main {
-  position: fixed;
-  top:53px;
-  bottom: 0;
-  left:0;
-  padding: 0;
-  padding-right:400px;
-  display:block;
+    position: fixed;
+    top:53px;
+    bottom: 30px;
+    left:0;
+    right:0;
+    padding: 0;
+    padding-right:400px;
+    display:block;
 }
 
 .CodeMirror {
-  height: 100%;
-  width: 100%;
-  padding:0;
+    height: 100%;
+    width: 100%;
+    padding:0;
 }
 
 .erroneous-line {
@@ -117,14 +176,15 @@ body {
  * status bar
  */
 #status-bar {
-  background-color: #222;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000;
-  padding: 5px;
-  color: #fff;
+    background-color: #222;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    padding: 5px;
+    color: #fff;
+    height:30px;
 }
 
 #status-bar.error {
