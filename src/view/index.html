@@ -66,12 +66,20 @@
                     <div class="panel-heading">
                         <div class="panel-title">
                             <a data-toggle="collapse" data-parent="#register-view-panel" href="#collapseTwo">
-                                ▼ Register view
+                                ▼ CPU Viewer
                             </a>
                         </div>
                     </div>
                     <div id="collapseTwo" class="panel-collapse collapse in">
-                        <div class="panel-body" id="reg-viewer">
+                        <div class="panel-body" id="cpu-viewer">
+                            <table class="cpu-viewer-table">
+                                <tr> 
+                                    <td class="reg-viewer-title"> PC: </td> <td id="pc-viewer"> 0x00000000 </td>
+                                    <td class="cpu-flag-viewer" id="cpu-zero-flag-viewer"> ZERO </td>
+                                    <td class="cpu-flag-viewer" id="cpu-zero-carry-viewer"> CARRY </td>
+                                    <td class="cpu-flag-viewer" id="cpu-zero-overflow-viewer"> OVERFLOW </td>
+                                </tr>
+                            </table>
 
                         </div>
                     </div>
@@ -154,7 +162,8 @@
 
 
         <script type="text/template" id="reg-viewer-tmpl">
-            <table class="reg-viewer-table">
+               
+            <table class="cpu-viewer-table">
             <% for (var i = 0; i < regCount; i++) { %>
             <% if(i % 3 == 0) print('<tr>') %>
             <td class="reg-viewer-title"> R<%= i %> </td> <td id="reg-viewer-<%= i %>"> 0x00000000 </td>

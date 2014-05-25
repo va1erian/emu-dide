@@ -16,7 +16,7 @@ Emulator = (function() {
     var pub = {}; //public symbols
 
     var registers = new Array(REG_COUNT); // 32 registers of 32 bit
-    var statusRegister;
+    var carryFlag, overflowFlag, zeroFlag;
     var programCounter;
 
     var buffer = new ArrayBuffer(MEMORY_SIZE);
@@ -46,7 +46,14 @@ Emulator = (function() {
         },
         '2': { //CMP, CMPI
             f1: function(regD, regA, regB) {
+                var result = registers[regA] - registers[regB];
                 
+                if(result === 0) {
+                    zeroFlag = true;
+                }
+                
+                //TODO other flags
+                programCounter += 4;                
             },
             f2: function(regD, regA, imm) {
                 
@@ -104,8 +111,51 @@ Emulator = (function() {
                 $(pub).trigger('memWrite', [registers[regD] + imm]);
                 programCounter += 4;
             }
+        },
+        '18': { // BE
+            f3: function(imm) {
+                if(zeroFlag) {
+                    programCounter += imm;
+                } else {
+                    programCounter +=4;
+                }
+            }
+        },
+        '19': { // BGT
+            f3: function(imm) {
+                
+            }
+        },
+        '1a': { //BLE
+            f3: function(imm) {
+                
+            }
+        },
+        '1b': { //BGTU
+            f3: function(imm) {
+                
+            }
+        },
+        '1c': { //BLEU
+            f3: function(imm) {
+                
+            }
+        },
+        '1d': { //BA
+            f3: function(imm){
+                programCounter += imm;
+            }
+        },
+        '1e': { //BC
+            f3: function(imm) {
+                
+            }
+        },
+        '1f': { //BO
+            f3: function(imm) {
+                
+            }
         }
-        //TODO other instructions
     };
 
 
@@ -125,7 +175,7 @@ Emulator = (function() {
         var format, codop, rD, rA, rB, imm;
         
         /*Check the first 2 bits*/
-        if((instruction >> 30) === 3){
+        if((instruction >>> 30) === 3){
             format = 3;
         }
         else if(((instruction & ~0xF8000000 ) >> 26) === 1){
@@ -134,10 +184,12 @@ Emulator = (function() {
             format = 1;
         }
         
-        codop = instruction >>> 27; // We don't care about the sign
+        codop = instruction >>> 27; // discard sign
         
         if(format === 3) {
             imm = (instruction & ~0xF8000000);
+            imm = imm << 5;
+            imm = imm >> 5; //recreate sign bit, TODO more elegant solution ?
         } else {
             rD = (instruction & ~0xFC000000 ) >> 21;
             rA = (instruction & ~0xFFE00000 ) >> 16; 
@@ -168,6 +220,9 @@ Emulator = (function() {
             case 2:
                 INSTRUCTIONS[opcodeHash].f2(decoded.rD, decoded.rA, decoded.imm);
                 break;
+            case 3:
+                INSTRUCTIONS[opcodeHash].f3(decoded.imm);
+                break;
         }
         
         console.log(registers);
@@ -192,15 +247,15 @@ Emulator = (function() {
             registers[i] = 0;
         }
         programCounter = 0x00001000;
-        statusRegister = 0;
+        overflowFlag = false;
+        carryFlag    = false;
+        zeroFlag     = false;
 
         for (i = 0; i < memory.length; i++) {
             memory[i] = 0;
         }
         state = CPU_STATE.HALTED;
     };
-
-    // TODO : Copie du programme depuis l'assembleur puis recopie dans la mémoire
 
     pub.loadProgram = function(program) {
         for (var i = PROGRAM_OFFSET; i < (PROGRAM_OBJ_SIZE + PROGRAM_OFFSET); i = i + 4){
@@ -252,6 +307,26 @@ Emulator = (function() {
         return new Uint16Array(buffer, 106496);
     };
     
+    pub.getCarryFlag = function() {
+        return carryFlag;
+    };
+    
+    pub.getOverflowFlag = function() {
+        return overflowFlag;
+    };
+    
+    pub.getZeroFlag = function() {
+        return zeroFlag;
+    };
+    
+    pub.getProgramCounter = function() {
+        return programCounter;
+    };
+    
+    pub.getState = function() {
+        return state;
+    };
+    
     pub.peek = readWord;
     
     pub.poke = writeWord;
@@ -259,6 +334,7 @@ Emulator = (function() {
 
     pub.REG_COUNT = REG_COUNT;
     pub.MEMORY_SIZE  = MEMORY_SIZE;
+    pub.STATE = CPU_STATE;
     
     return pub;
 })();
