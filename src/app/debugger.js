@@ -21,9 +21,17 @@ Debugger = (function() {
     }
     
     
-    function renderRegViewer() {
+    function renderCPUViewer() {
         for(var i = 0; i < Emulator.REG_COUNT; i++) {            
             $('#reg-viewer-' + i).text('0x'+ formatWord(Emulator.readRegister(i)));
+        }
+        
+        $('#pc-viewer').text('0x' + formatWord(Emulator.getProgramCounter()));  
+        
+        if(Emulator.getZeroFlag()) {
+            $('#cpu-zero-flag-viewer').addClass('cpu-flag-viewer-active');
+        } else {
+            $('#cpu-zero-carry-viewer').removeClass('cpu-flag-viewer-active');
         }
     }
     
@@ -45,17 +53,17 @@ Debugger = (function() {
     }
     
     function regWriteCallback() {
-        renderRegViewer();
+        renderCPUViewer();
     }    
     
     function stateChangeCallback() {
-        renderRegViewer();
+        renderCPUViewer();
     }
     
     pub.init = function() {
         console.log($('#reg-viewer-tmpl').text());
         regViewTemplate = _.template($('#reg-viewer-tmpl').text());
-        $('#reg-viewer').html(regViewTemplate({regCount: Emulator.REG_COUNT}));
+        $('#cpu-viewer').append(regViewTemplate({regCount: Emulator.REG_COUNT}));
         
         $(Emulator).on('regWrite', regWriteCallback);
         $(Emulator).on('stateChange', stateChangeCallback);

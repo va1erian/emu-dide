@@ -1,6 +1,6 @@
 /*
-   EMU-DIDE - UI management module
-*/
+ EMU-DIDE - UI management module
+ */
 
 UI = (function() {
     'use strict';
@@ -13,21 +13,47 @@ UI = (function() {
         lastErroneousLine = editor.getLineHandle(lineNo);
         editor.addLineClass(lastErroneousLine, 'background', 'erroneous-line');
     }
-    
+
     function clearErroneousLine() {
         editor.removeLineClass(lastErroneousLine, 'background', 'erroneous-line');
     }
-    
+
+
+    function makeMarker() {
+      var marker = document.createElement("div");
+      marker.style.color = "#822";
+      marker.innerHTML = "●";
+      return marker;
+    }
     
     function setStatusBarError(message) {
         $('#status-bar').html(message).addClass('error');
-        setTimeout(function() { $('#status-bar').removeClass('error');}, 500);
+        setTimeout(function() {
+            $('#status-bar').removeClass('error');
+        }, 500);
     }
-    
+
     function setStatusBarMessage(message) {
         $('#status-bar').html(message);
     }
     
+    function updateUI() {
+        switch(Emulator.getState()) {
+            case Emulator.STATE.RUNNING:
+                $('#stepTbBtn').text('Pause');
+                setStatusBarMessage('Emulator running...');
+                break;
+            case Emulator.STATE.HALTED:
+                $('#stepTbBtn').text('Step');
+                setStatusBarMessage('Emulator halted.');
+                break;
+            case Emulator.STATE.PAUSED:
+                $('#stepTbBtn').text('Step');
+                setStatusBarError('Emulator paused.');
+                break;
+        }
+    }
+
     var toolbarClickBindings = {
         '#newTbBtn': function() {
             editor.setValue('\n');
@@ -36,10 +62,11 @@ UI = (function() {
             clearErroneousLine();
             try {
                 var tmpProg = Assembler.assemble(editor.getValue());
+                Emulator.reset();
                 Emulator.loadProgram(tmpProg);
                 setStatusBarMessage('Assembly phase succeeded, run the program.');
-            } catch(e) {
-                if(e instanceof Assembler.AssemblerException) {
+            } catch (e) {
+                if (e instanceof Assembler.AssemblerException) {
                     markErroneousLine(e.line);
                     setStatusBarError(e.toString());
                 } else {
@@ -48,9 +75,8 @@ UI = (function() {
                 }
             }
         },
-       
         '#runTbBtn': function() {
-            console.log('run');
+            Emulator.run();
         },
         '#stepTbBtn': function() {
             Emulator.step();
@@ -69,19 +95,44 @@ UI = (function() {
                     "LOAD R4, 0(R2) ; v[k] <- R4\n" +
                     "STORE R3, 4(R2) ; v[k+1] <- temp\n",
             mode: 'javascript',
-            lineNumbers: true
+            lineNumbers: true,
+            gutters: ['CodeMirror-linenumbers', 'breakpoints']
+        });
+
+        editor.on("gutterClick", function(cm, n) {
+            var info = cm.lineInfo(n);
+            if(info.gutterMarkers) {
+                cm.setGutterMarker(n, 'breakpoints', null);
+            } else {
+                cm.setGutterMarker(n, 'breakpoints', makeMarker());
+            }
         });
 
         _.each(toolbarClickBindings, function(cb, id) {
             $(id).on('click', cb);
         });
+        
+        $(Emulator).on('stateChange', updateUI);
 
         setStatusBarMessage("Welcome to EMU-DIDE");
     };
 
-    pub.setStatusMessage = function(message) {
+    pub.getEditorBreakpoints = function() {
+        var breakpoints = [];
         
+        editor.eachLine(function(handle) {
+            var lineInfo = editor.lineInfo(handle);
+            if(lineInfo.gutterMarkers){
+                breakpoints.push(lineInfo.line);
+            } 
+        });
+        
+        return breakpoints;
     };
 
-   return pub;
+    pub.setStatusMessage = function(message) {
+
+    };
+
+    return pub;
 })();

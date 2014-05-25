@@ -1,5 +1,5 @@
 /*
-   EMU-DIDE Assembler and Emulator
+   EMU-DIDE Assembler and Emulator entry point
 */
 
 (function() {

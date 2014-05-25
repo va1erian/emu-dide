@@ -67,11 +67,11 @@ body {
 }
 
 
-#reg-viewer, #mem-viewer {
+#cpu-viewer, #mem-viewer {
     font-size: 12px;
 }
 
-#reg-viewer, .mem-viewer-output {
+#cpu-viewer, .mem-viewer-output {
     font-family: Consolas, "Lucida Console",  Monaco, "DejaVu Sans Mono", "Courier New", sans-serif;
 }
 
@@ -85,8 +85,18 @@ body {
 .reg-viewer-title {
     font-weight: bold;
 }
-.reg-viewer-table {
+.cpu-viewer-table {
     width: 100%;
+    margin: 4px 2px 4px 2px;
+}
+
+.cpu-flag-viewer {
+    color: #bbb;
+}
+
+.cpu-flag-viewer-active {
+    color: #710000;
+    font-weight: bold;
 }
 
 
@@ -107,6 +117,10 @@ body {
   height: 100%;
   width: 100%;
   padding:0;
+}
+
+.CodeMirror-gutter {
+    width: 14px;
 }
 
 .erroneous-line {
