@@ -94,6 +94,12 @@ body {
     padding: 3px;
 }
 
+#video_canvas {
+    image-rendering:-moz-crisp-edges;
+    -ms-interpolation-mode:nearest-neighbor;
+    height: 192px;
+    width: 256px;
+}
 
 #program-list li:hover {
     background-color: #eee;

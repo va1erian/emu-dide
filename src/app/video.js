@@ -6,27 +6,27 @@ Video = (function() {
 
     var pub = {}; // public symbols
 
-    var MYWIDTH = 128 * 2;
-    var MYLENGTH = 96 * 2;
+    var FRAME_WIDTH = 128;
+    var FRAME_HEIGHT = 96;
 
-    var c, ctx;
+    var c, ctx, img;
 
     function convertDwordToInt(nb) {
 
-        var red = nb & 0x1f;
+        var red = nb & 0x1F;
         red = Math.floor((red * 255) / 32);
-        var green = (nb & 0x7e0) >> 5;
+        var green = (nb & 0x7E0) >> 5;
         green = Math.floor((green * 255) / 64);
-        var blue = (nb & 0xf800) >> 11;
+        var blue = (nb & 0xF800) >> 11;
         blue = Math.floor((blue * 255) / 32);
 
         return new Array(red, green, blue);
     }
 
     pub.generateTestBuffer = function() {
-        var memoireVideo = new Uint16Array(MYWIDTH * MYLENGTH);
+        var memoireVideo = new Uint16Array(FRAME_WIDTH * FRAME_HEIGHT);
 
-        for (var i = 0; i < MYWIDTH * MYLENGTH; i++) {
+        for (var i = 0; i < FRAME_WIDTH * FRAME_HEIGHT; i++) {
             memoireVideo[i] = Math.floor(Math.random() * (65535));
         }
   
@@ -35,25 +35,28 @@ Video = (function() {
 
     pub.init = function() {
         c = document.getElementById("video_canvas");        
-        c.width = MYWIDTH;
-        c.height = MYLENGTH;
+        c.width = FRAME_WIDTH;
+        c.height = FRAME_HEIGHT;
         ctx = c.getContext("2d");
+        img = ctx.createImageData(FRAME_WIDTH, FRAME_HEIGHT);
     };
 
     pub.drawBuffer = function(buf) {
-        var memoireVideo = buf;
-
+        
         var i = 0;
-        for (var x = 0; x < MYWIDTH; x = x + 2) {
-            for (var y = 0; y < MYLENGTH; y = y + 2) {
-                var pixel = convertDwordToInt(memoireVideo[i]);
-                ctx.fillStyle = "rgb(" + pixel[0] + "," + pixel[1] + "," + pixel[2] + ")";
-                //maChaine += "=> " + x + ":" + y + " \n";
-                ctx.fillRect(x, y, 2, 2);
+        for (var y = 0; y < FRAME_HEIGHT; y++) {
+            for (var x = 0; x < FRAME_WIDTH; x++) {
+                var pixel = convertDwordToInt(buf[i]);
+                img.data[(i * 4)]   = pixel[0];
+                img.data[(i * 4) + 1] = pixel[1];
+                img.data[(i * 4) + 2] = pixel[2];
+                img.data[(i * 4) + 3] = 255;
                 i++;
             }
-            i++;
+            //i++;
         }
+        
+        ctx.putImageData(img, 0, 0);  
     };
 
     return pub;

@@ -53,7 +53,7 @@ Debugger = (function() {
     }
     
     function regWriteCallback() {
-        renderCPUViewer();
+        //renderCPUViewer();
     }    
     
     function stateChangeCallback() {

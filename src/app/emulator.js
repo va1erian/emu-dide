@@ -19,9 +19,9 @@ Emulator = (function() {
     var carryFlag, overflowFlag, zeroFlag;
     var programCounter;
 
-    var buffer = new ArrayBuffer(MEMORY_SIZE);
-    var memory = new DataView(buffer);
-
+    var buffer;
+    var memory;
+    var frameBuffer;
     var state;
 
 
@@ -33,7 +33,9 @@ Emulator = (function() {
                 programCounter += 4;
             },
             f2: function(regD, regA, imm) {
-                
+                registers[regD] = registers[regA] + imm;
+                $(pub).trigger('regWrite');
+                programCounter += 4;
             }
         },
         '1': { //SUB, SUBI
@@ -61,26 +63,38 @@ Emulator = (function() {
         },
         '4': { //AND, ANDI
             f1: function(regD, regA, regB) {
-                
+                registers[regD] = registers[regA] & registers[regB];
+                $(pub).trigger('regWrite');
+                programCounter += 4;
             },
             f2: function(regD, regA, imm) {
-                
+                registers[regD] = registers[regA] & imm;
+                $(pub).trigger('regWrite');
+                programCounter += 4;
             }
         },
         '5': { //XOR, XORI
             f1: function(regD, regA, regB) {
-                
+                registers[regD] = registers[regA] ^ registers[regB];
+                $(pub).trigger('regWrite');
+                programCounter += 4;
             },
             f2: function(regD, regA, imm) {
-                
+                registers[regD] = registers[regA] ^ imm;
+                $(pub).trigger('regWrite');
+                programCounter += 4;
             }
         },
         '6': { //OR, ORI
             f1: function(regD, regA, regB) {
-                
+                registers[regD] = registers[regA] | registers[regB];
+                $(pub).trigger('regWrite');
+                programCounter += 4;
             },
             f2: function(regD, regA, imm) {
-                
+                registers[regD] = registers[regA] | imm;
+                $(pub).trigger('regWrite');
+                programCounter += 4;
             }            
         },
         '7': { // LUI
@@ -97,7 +111,20 @@ Emulator = (function() {
                 programCounter += 4;
             }
         },
-        
+        '9': { // SAR
+            f2: function(regD, regA, imm) {
+                registers[regD] = registers[regA] >> imm;
+                $(pub).trigger('regWrite');
+                programCounter += 4;
+            }           
+        },
+        'a': { // SLR
+            f2: function(regD, regA, imm) {
+                registers[regD] = registers[regA] >>> imm;
+                $(pub).trigger('regWrite');
+                programCounter += 4;
+            }
+        },        
         '10': { //LOAD
             f2: function(regD, regA, imm) {
                 registers[regD] = readWord(registers[regA] + imm);
@@ -206,7 +233,7 @@ Emulator = (function() {
     }
 
     function execute(decoded) { 
-        console.log(decoded);
+//        console.log(decoded);
         var opcodeHash = decoded.codop.toString(16);
         
         if(!(opcodeHash in INSTRUCTIONS)) {
@@ -225,8 +252,8 @@ Emulator = (function() {
                 break;
         }
         
-        console.log(registers);
-        console.log(programCounter);
+//        console.log(registers);
+//        console.log(programCounter);
     }
 
     function cycle() {
@@ -235,8 +262,17 @@ Emulator = (function() {
         execute(decoded);
 
         Video.drawBuffer(pub.getFramebuffer());
+    }
+    
+    function run() {
+        for(var i = 0; i < 2; i++) {
+            cycle();
+            cycle();
+            cycle();
+            cycle();
+        }
         if (state === CPU_STATE.RUNNING) {
-            setTimeout(cycle, 0); // schedule next cycle
+            setTimeout(run, 0); // schedule next emulator 
         }
     }
 
@@ -251,9 +287,9 @@ Emulator = (function() {
         carryFlag    = false;
         zeroFlag     = false;
 
-        for (i = 0; i < memory.length; i++) {
-            memory[i] = 0;
-        }
+        buffer = new ArrayBuffer(MEMORY_SIZE);
+        memory = new DataView(buffer);
+        frameBuffer = new Uint16Array(buffer, 106496);
         state = CPU_STATE.HALTED;
     };
 
@@ -267,7 +303,7 @@ Emulator = (function() {
         if (state !== CPU_STATE.RUNNING) {
             state = CPU_STATE.RUNNING;
             $(pub).trigger('stateChange');
-            cycle();
+            run();
         }
     };
 
@@ -304,7 +340,7 @@ Emulator = (function() {
     };
     
     pub.getFramebuffer = function() {
-        return new Uint16Array(buffer, 106496);
+        return frameBuffer;
     };
     
     pub.getCarryFlag = function() {
