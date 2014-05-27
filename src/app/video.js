@@ -39,6 +39,10 @@ Video = (function() {
         c.height = FRAME_HEIGHT;
         ctx = c.getContext("2d");
         img = ctx.createImageData(FRAME_WIDTH, FRAME_HEIGHT);
+        
+        $(Emulator).on('memWrite', function(e, mem) {
+           pub.drawBuffer(Emulator.getFramebuffer()); 
+        });
     };
 
     pub.drawBuffer = function(buf) {

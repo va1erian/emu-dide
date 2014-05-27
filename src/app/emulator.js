@@ -238,6 +238,7 @@ Emulator = (function() {
         
         if(!(opcodeHash in INSTRUCTIONS)) {
             console.log('Emulator error : Unrecognized opcode ', opcodeHash);
+            pub.halt();
         }
         
         switch(decoded.format) {
@@ -260,17 +261,14 @@ Emulator = (function() {
         var instruction = fetch();
         var decoded = decode(instruction);
         execute(decoded);
-
-        Video.drawBuffer(pub.getFramebuffer());
     }
     
     function run() {
-        for(var i = 0; i < 2; i++) {
-            cycle();
-            cycle();
-            cycle();
-            cycle();
-        }
+        cycle();
+        cycle();
+        cycle();
+        cycle();
+        
         if (state === CPU_STATE.RUNNING) {
             setTimeout(run, 0); // schedule next emulator 
         }

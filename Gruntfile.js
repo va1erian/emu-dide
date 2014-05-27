@@ -44,6 +44,7 @@ module.exports = function(grunt) {
           'build/emu-dide.html': ['src/view/index.html'],
           'build/pub/css/emu-dide.css': ['src/view/css/emu-dide.css'],
           'build/pub/img/logo.png': ['src/view/img/logo.png'],
+          'build/pub/img/login-btn-edge.png': ['src/view/img/login-btn-edge.png'],
         }
       },
         services: {

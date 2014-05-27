@@ -1,8 +1,8 @@
 
 /* Move down content because we have a fixed navbar that is 50px tall */
 body {
-    padding-top: 53px;
-    padding-bottom: 30px;
+    padding-top: 52px;
+    /*padding-bottom: 30px;*/
 }
 
 .navbar {
@@ -22,9 +22,20 @@ body {
     font-weight: bold;
 }
 
+.emu-dide-right-navbar {
+     background: #222 url("../img/login-btn-edge.png") no-repeat left top;
+     border-bottom: 1px solid #710000;
+     padding-left: 16px;
+}
+
+#loginTbBtn {
+    background-color: #710000;
+    color:white;
+}
+
 .side-pane {
     position: fixed;
-    top: 53px;
+    top: 52px;
     bottom:30px;
     right: 0;
     width: 400px;
@@ -38,11 +49,18 @@ body {
 
 }
 
-#member-pane {
+#member-pane, #mem-dump-pane {
     display: none;
     z-index: 1000;
-    padding: 0;
     overflow: hidden;
+    padding: 0;
+}
+
+#mem-dump-pane .mem-viewer-output {
+    background-color:#fff;
+    overflow-y: auto;
+    font-size: 12px;
+    height: 100%;
 }
 
 .member-pane-container {
@@ -50,7 +68,7 @@ body {
     height:100%;
 }
 
-#member-pane h3 {
+#member-pane h3, #mem-dump-pane h3 {
     margin: 12px;
     text-transform: uppercase;
     color: #710000;
@@ -136,7 +154,7 @@ body {
 }
 
 #cpu-viewer, .mem-viewer-output {
-    font-family: Consolas, "Lucida Console",  Monaco, "DejaVu Sans Mono", "Courier New", sans-serif;
+    font-family: Consolas, "Lucida Console",  Monaco, "DejaVu Sans Mono", "Courier New", monospace;
 }
 
 .mem-viewer-output {
@@ -169,7 +187,7 @@ body {
  */
 .main {
     position: fixed;
-    top:53px;
+    top:52px;
     bottom: 30px;
     left:0;
     right:0;
@@ -182,6 +200,8 @@ body {
     height: 100%;
     width: 100%;
     padding:0;
+    font-family: Consolas, "Lucida Console",  Monaco, "DejaVu Sans Mono", "Courier New", monospace;
+    font-size: 14px;
 }
 
 .CodeMirror-gutter {

@@ -49,7 +49,24 @@ Debugger = (function() {
             }
         }
         
-        $('#mem-viewer').html(memDump);
+        $('#mem-dump-content').append(memDump);
+    }
+    
+    function memPeekBtnClick() {
+        var addr = $('#peek-address-field').val();
+        var offset = parseInt(addr, 16);
+        $('#peek-result').text('0x' + formatWord(Emulator.peek(offset)));
+    }
+    
+    function memPokeBtnClick() {
+        var addr = $('#poke-address-field').val();
+        var val  = $('#poke-value-field').val();
+        Emulator.poke(parseInt(addr,16), parseInt(val, 16));
+    }
+    
+    function memDumpBtnClick() {
+        $('#mem-dump-pane').fadeIn(500);
+        renderMemViewer();
     }
     
     function regWriteCallback() {
@@ -61,9 +78,13 @@ Debugger = (function() {
     }
     
     pub.init = function() {
-        console.log($('#reg-viewer-tmpl').text());
         regViewTemplate = _.template($('#reg-viewer-tmpl').text());
         $('#cpu-viewer').append(regViewTemplate({regCount: Emulator.REG_COUNT}));
+        
+        $('#mem-peek-btn').click(memPeekBtnClick);
+        $('#mem-poke-btn').click(memPokeBtnClick);
+        $('#mem-dump-btn').click(memDumpBtnClick);
+        $('#mem-dump-close').click(function() { $('#mem-dump-pane').fadeOut(500);});
         
         $(Emulator).on('regWrite', regWriteCallback);
         $(Emulator).on('stateChange', stateChangeCallback);

@@ -36,7 +36,7 @@
                         <li><a id='stepTbBtn' href="#">Step</a></li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
-                        <li class="navbar-right"><a id='loginTbBtn' href="#">Login</a></li>
+                        <li class="navbar-right emu-dide-right-navbar"><a id='loginTbBtn' href="#">Login</a></li>
                     </ul>
                 </div>
             </div>
@@ -97,18 +97,18 @@
                             <form>
                                 <div class="form-group">
                                     <label> Read Word </label>
-                                    <input type="text" class="form-control input-sm" placeholder="Address"/>
-                                    <div class="mem-viewer-output"> Value: </div>
-                                    <input type="button" class="btn btn-default btn-sm" value="Peek"/>
+                                    <input type="text"  id="peek-address-field" autocomplete="off"  class="form-control input-sm" placeholder="Address"/>
+                                    <div id="peek-result" class="mem-viewer-output"> Value: </div>
+                                    <input type="button" id="mem-peek-btn" class="btn btn-default btn-sm" value="Peek"/>
                                 </div>
                                 <div class="form-group">
                                     <label> Write Word </label>
-                                    <input type="text" class="form-control input-sm" placeholder="Address"/>
-                                    <input type="text" class="form-control input-sm" placeholder="Value"/>
-                                    <input type="button" class="btn btn-default btn-sm" value="Poke"/>
+                                    <input type="text" id="poke-address-field" autocomplete="off" class="form-control input-sm" placeholder="Address"/>
+                                    <input type="text" id="poke-value-field" autocomplete="off"  class="form-control input-sm" placeholder="Value"/>
+                                    <input type="button" id="mem-poke-btn" class="btn btn-default btn-sm" value="Poke"/>
                                 </div>
                                 <div class="form-group">
-                                    <input type="button" class="btn btn-default" value="Memory dump"/>
+                                    <input type="button" id="mem-dump-btn" class="btn btn-default" value="Memory dump"/>
                                 </div>
                             </form>
                         </div>
@@ -120,40 +120,16 @@
                 <h3> Your programs </h3>
                 <div class="member-pane-container">
                 <ul id="program-list">
-                    <li>                        
-                        <a class="btn btn-default btn-sm program-list-action"> Delete </a>
-                        <a class="btn btn-default btn-sm program-list-action"> Duplicate </a>
-                        
-                        <strong> lel lil lul </strong> <span class="program-date"> Last Updated 02/02/02</span>
-
-                    </li>
-                    <li>                        
-                        <div class="program-list-action"> Delete </div>
-                        <div class="program-list-action"> Duplicate </div>
-                        
-                        <strong> lel lil lul </strong> <span class="program-date"> Last Updated 02/02/02</span>
-
-                    </li>
-                    <li>                        
-                        <div class="program-list-action"> Delete </div>
-                        <div class="program-list-action"> Duplicate </div>
-                        
-                        <strong> lel lil lul </strong> <span class="program-date"> Last Updated 02/02/02</span>
-
-                    </li>
-                    <li>                        
-                        <div class="program-list-action"> Delete </div>
-                        <div class="program-list-action"> Duplicate </div>
-                        
-                        <strong> lel lil lul </strong> <span class="program-date"> Last Updated 02/02/02</span>
-
-                    </li>
-
                 </ul>
                     <div class="well-sm"> <a class="btn btn-default btn-block"> <strong> Log out </strong> </a> 
 
                      <a class="btn btn-default btn-block"> Delete Account </a> </div>
                 </div>
+            </div>
+            
+            <div id="mem-dump-pane" class="side-pane">
+                <h3> Memory Dump <a id="mem-dump-close" class="btn btn-default btn-sm pull-right"> Back </a> </h3>
+                <div id="mem-dump-content" class="mem-viewer-output"> </div>
             </div>
         </div>
         <div id="status-bar">
