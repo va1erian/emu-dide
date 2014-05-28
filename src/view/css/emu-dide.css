@@ -28,7 +28,7 @@ body {
      padding-left: 16px;
 }
 
-#loginTbBtn {
+#sidePaneBtn {
     background-color: #710000;
     color:white;
 }
@@ -49,7 +49,7 @@ body {
 
 }
 
-#member-pane, #mem-dump-pane {
+#member-pane, #mem-dump-pane, #login-pane{
     display: none;
     z-index: 1000;
     overflow: hidden;
@@ -69,12 +69,17 @@ body {
     height:100%;
 }
 
-#member-pane h3, #mem-dump-pane h3 {
+#member-pane h3, #mem-dump-pane h3, #login-pane h3 {
     margin: 12px;
     text-transform: uppercase;
     color: #710000;
     font-weight: bold;
     font-size: 1.2em;
+}
+
+.side-pane-content {
+    padding: 8px;
+    background-color: white;
 }
 
 #program-list {
@@ -119,6 +124,8 @@ body {
     height: 144px;
     width: 192px;
 }
+
+
 
 #program-list li:hover {
     background-color: #eee;
