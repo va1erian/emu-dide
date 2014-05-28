@@ -8,13 +8,16 @@ UI = (function() {
             editor;
 
     var lastErroneousLine = 0;
-    var lastExecutedLine  = 0;
+    var lastExecutedLine = 0;
+
+    var SIDE_PANE = {DEBUGGER: 0, LOGIN: 1, PROGRAMS: 2};
+    var currentSidePane = SIDE_PANE.DEBUGGER;
 
     function markErroneousLine(lineNo) {
         lastErroneousLine = editor.getLineHandle(lineNo);
         editor.addLineClass(lastErroneousLine, 'background', 'erroneous-line');
     }
-    
+
     function markExecutedLine(lineNo) {
         lastExecutedLine = editor.getLineHandle(lineNo);
         editor.addLineClass(lastExecutedLine, 'background', 'executed-line');
@@ -23,19 +26,19 @@ UI = (function() {
     function clearErroneousLine() {
         editor.removeLineClass(lastErroneousLine, 'background', 'erroneous-line');
     }
-    
+
     function clearExecutedLine() {
         editor.removeLineClass(lastExecutedLine, 'background', 'executed-line');
     }
 
 
     function makeMarker() {
-      var marker = document.createElement("div");
-      marker.style.color = "#822";
-      marker.innerHTML = "●";
-      return marker;
+        var marker = document.createElement("div");
+        marker.style.color = "#822";
+        marker.innerHTML = "●";
+        return marker;
     }
-    
+
     function setStatusBarError(message) {
         $('#status-bar').html(message).addClass('error');
         setTimeout(function() {
@@ -46,9 +49,35 @@ UI = (function() {
     function setStatusBarMessage(message) {
         $('#status-bar').html(message);
     }
-    
+
+    function switchSidePane(pane) {
+        switch (pane) {
+            case SIDE_PANE.DEBUGGER:
+                $('#login-pane, #member-pane').fadeOut(500);
+                currentSidePane = SIDE_PANE.DEBUGGER;
+
+                if (ServerStorage.isLoggedIn()) {
+                    $('#sidePaneBtn').text('Saved programs');
+                } else {
+                    $('#sidePaneBtn').text('Log in');
+                }
+                break;
+            case SIDE_PANE.LOGIN:
+                $('#login-pane').fadeIn(500);
+                $('#sidePaneBtn').text('Debugger');
+                currentSidePane = SIDE_PANE.LOGIN;
+                break;
+            case SIDE_PANE.PROGRAMS:
+                $('#login-pane').fadeOut(500);
+                $('#member-pane').fadeIn(500);
+                $('#sidePaneBtn').text('Debugger');
+                break;
+        }
+
+    }
+
     function updateUI() {
-        switch(Emulator.getState()) {
+        switch (Emulator.getState()) {
             case Emulator.STATE.RUNNING:
                 $('#stepTbBtn').text('Pause');
                 setStatusBarMessage('Emulator running...');
@@ -92,8 +121,8 @@ UI = (function() {
         '#stepTbBtn': function() {
             clearExecutedLine();
             var line = Assembler.addressToLine(Emulator.getProgramCounter());
-            if(line !== -1) {   
-                markExecutedLine(line);   
+            if (line !== -1) {
+                markExecutedLine(line);
             } else {
                 console.log('oops: failed to find instruction line for the given PC');
             }
@@ -103,17 +132,18 @@ UI = (function() {
         '#settingsTbBtn': function() {
             console.log('settings');
         },
-        
-        '#loginTbBtn': function() {
-            console.log('kek');
-            $.getJSON('/programs', function(data) {
-                console.log(data);
-            });
-            
-            $('#member-pane').fadeIn(500);
+        '#sidePaneBtn': function() {
+            if (currentSidePane === SIDE_PANE.DEBUGGER) {
+                if (ServerStorage.isLoggedIn()) {
+                    switchSidePane(SIDE_PANE.PROGRAMS);
+                }
+                else {
+                    switchSidePane(SIDE_PANE.LOGIN);
+                }
+            } else {
+                switchSidePane(SIDE_PANE.DEBUGGER);
+            }
         }
-        
-        
     };
 
     pub.init = function() {
@@ -131,7 +161,7 @@ UI = (function() {
 
         editor.on("gutterClick", function(cm, n) {
             var info = cm.lineInfo(n);
-            if(info.gutterMarkers) {
+            if (info.gutterMarkers) {
                 cm.setGutterMarker(n, 'breakpoints', null);
             } else {
                 cm.setGutterMarker(n, 'breakpoints', makeMarker());
@@ -141,7 +171,7 @@ UI = (function() {
         _.each(toolbarClickBindings, function(cb, id) {
             $(id).on('click', cb);
         });
-        
+
         $(Emulator).on('stateChange', updateUI);
 
         setStatusBarMessage("Welcome to EMU-DIDE");
@@ -149,20 +179,20 @@ UI = (function() {
 
     pub.getEditorBreakpoints = function() {
         var breakpoints = [];
-        
+
         editor.eachLine(function(handle) {
             var lineInfo = editor.lineInfo(handle);
-            if(lineInfo.gutterMarkers){
+            if (lineInfo.gutterMarkers) {
                 breakpoints.push(lineInfo.line);
-            } 
+            }
         });
-        
+
         return breakpoints;
     };
 
-    pub.setStatusMessage = function(message) {
+    pub.switchSidePane = switchSidePane;
 
-    };
+    pub.SIDE_PANE = SIDE_PANE;
 
     return pub;
 })();

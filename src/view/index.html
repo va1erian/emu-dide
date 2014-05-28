@@ -34,9 +34,10 @@
                         <li><a id='assembleTbBtn'   href="#">Assemble</a></li>
                         <li><a id='runTbBtn'   href="#">Run</a></li>
                         <li><a id='stepTbBtn' href="#">Step</a></li>
+                        <li><a id='saveTbBtn' href='#'> Save </a> </li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
-                        <li class="navbar-right emu-dide-right-navbar"><a id='loginTbBtn' href="#">Login</a></li>
+                        <li class="navbar-right emu-dide-right-navbar"><a id='sidePaneBtn' href="#">Login</a></li>
                     </ul>
                 </div>
             </div>
@@ -117,11 +118,32 @@
                 </div>
 
             </div>
+            
+            <div id="login-pane" class="side-pane">
+                <h3> Log in </h3>
+                <div class="side-pane-content">
+                    <form id="login-form" action="/login">
+                        <div class="form-group">
+                        <label> User name </label>
+                        <input type="text" class="form-control" id="login-username-field"/>
+                        </div>
+                        <div class="form-group">
+                        <label> Password </label>
+                        <input type="password" class="form-control" id="login-password-field"/>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-default"> <strong> Log in </strong> </button>
+                            <button class="btn btn-default"> Register </button>
+                            <label id="login-status-label" style="display:none"> </label>
+                        </div>
+                    </form>
+                </div>
+            </div>
             <div id="member-pane" class="side-pane">
                 <h3> Your programs </h3>
                 <div class="member-pane-container">
-                <ul id="program-list">
-                </ul>
+                    <ul id="program-list">
+                    </ul>
                     <div class="well-sm"> <a class="btn btn-default btn-block"> <strong> Log out </strong> </a> 
 
                      <a class="btn btn-default btn-block"> Delete Account </a> </div>
@@ -153,7 +175,7 @@
                 <a class="btn btn-default btn-sm program-list-action"> Delete </a>
                 <a class="btn btn-default btn-sm program-list-action"> Duplicate </a>
 
-                <strong> <%- program.name %> </strong> <span class="program-date"> Last Updated <%- program.lastUpdate %> </span>
+                <strong> <%- program.name %> </strong> <span class="program-date"> Last Updated <%- program.last_update %> </span>
 
             </li>
         </script>
