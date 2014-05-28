@@ -48,6 +48,9 @@ Flight::route('POST /login', function() {
  * Log the user out.
  */
 Flight::route('POST /logout', function() {
+    unset($_SESSION['user']);
+    session_destroy();
+    Flight::json(['status' => 'ok']);
 });
 
 /*
@@ -58,10 +61,8 @@ Flight::route('POST /logout', function() {
 Flight::route('POST /register', function() {
     $request = Flight::request();
     
-    
     $nickname = $request->data['nickname'];
     $pass     = $request->data['password'];
-    
     $userServ = Flight::userService();
     
     $user = $userServ->findByName($nickname);
@@ -80,23 +81,6 @@ Flight::route('POST /register', function() {
     }
 });
 
-/*
- * No parameters
- * 
- * Return a list of program for the logged in user
- */
-Flight::route('GET /programs', function() {
-    error_log('top kek');
-    
-    $sourceServ = Flight::sourceCodeService();
-    
-    $program = $sourceServ->findById(1, 1);
-    
-    //var_dump($program);
-    
-    Flight::json(  ['lel' => $program] );
-});
-
 
 /*
  *  GET parameters : id - source code id
@@ -105,7 +89,32 @@ Flight::route('GET /programs', function() {
  * logged in user id
  */
 Flight::route('GET /programs/@id', function($id) {
+    $sourceServ = Flight::sourceCodeService();
+    if(isset($_SESSION['user'])){
+        $user = unserialize($_SESSION['user']);
+        $programs = $sourceServ->findById($id, $user->id);
+        Flight::json(['sources' => $programs, 'status' => 'ok']);
+    } else {
+        Flight::json(['status' => 'ko', 'error' => 'No connected users'] );
+    }
+});
 
+/*
+ * No parameters
+ * 
+ * Return a list of program for the logged in user
+ */
+Flight::route('GET /programs', function() {
+    
+    $sourceServ = Flight::sourceCodeService();
+    if(isset($_SESSION['user'])){
+        $user = unserialize($_SESSION['user']);
+        $programs = $sourceServ->findAllByUserId($user->id);
+        Flight::json(['sources' => $programs, 'status' => 'ok']);
+    } else {
+        Flight::json(['status' => 'ko', 'error' => 'No connected users'] );
+    }
+    
 });
 
 /*
@@ -115,7 +124,18 @@ Flight::route('GET /programs/@id', function($id) {
  * logged in user id
  */
 Flight::route('POST /programs/@id', function($id) { 
+    $request = Flight::request();
     
+    $content = $request->data['content'];
+    $pass     = $request->data['password'];
+    
+    $sourceServ = Flight::sourceCodeService();
+    if(isset($_SESSION['user'])){
+        $programs = $sourceServ->findById($id, $_SESSION['user']);
+        Flight::json(['sources' => $programs, 'status' => 'ok']);
+    } else {
+        Flight::json(['status' => 'ko', 'error' => 'No connected users'] );
+    }
 });
 
 /*
@@ -123,7 +143,7 @@ Flight::route('POST /programs/@id', function($id) {
  * 
  * Add to the database a new program using the given parameters
  */
-Flight::route('PUT /programs', function($id) {
+Flight::route('PUT /programs', function() {
     
 });
 

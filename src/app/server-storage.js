@@ -34,19 +34,20 @@ ServerStorage = (function(){
     }
     
     function fetchProgram(id) {
-        var req = $.getJSON('/programs/' + id);
+        var req = $.get('/programs/' + id);
         
         req.done(function(data) {
             console.log(data);
         });
         
-        req.fail(function() {
+        req.fail(function(req, data, info) {
            alert('Sorry, an error when attempting to fetch the program.'); 
+           console.log(data, info);
         });
     }
     
-    function processLogInForm(e)  {
-        e.preventDefault();
+    function processLogInForm(event) {
+        event.preventDefault();
         
         var nick = $('#login-username-field').val();
         var pwd  = $('#login-password-field').val();
@@ -75,8 +76,7 @@ ServerStorage = (function(){
     };
     
     pub.isLoggedIn = function () {
-        //return identity !== undefined;
-        return true;
+        return identity !== undefined;
     };
     
     pub.userIdentity = function() {

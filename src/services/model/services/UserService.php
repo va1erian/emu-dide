@@ -24,7 +24,7 @@ class UserService {
         if($stmt->execute([':name' => $name])) {
             return $stmt->fetchObject('\model\entities\User');
         } else {
-            error_log('UserService byCredentials query failed');
+            error_log('UserService byName query failed');
             return false;
         }
     }
@@ -39,7 +39,7 @@ class UserService {
         if($stmt->execute([':name' => $user->nickname, ':password' => $password])) {
             return $this->pdo->lastInsertId();
         } else {
-            var_dump('UserService byCredentials query failed');
+            var_dump('UserService add query failed');
             return $this->pdo->errorInfo();
         }
     }

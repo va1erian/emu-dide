@@ -7,6 +7,7 @@
    $(document).ready( function() {
 
       UI.init();
+      ServerStorage.init();
       Emulator.reset();
       Debugger.init();
       Video.init();
