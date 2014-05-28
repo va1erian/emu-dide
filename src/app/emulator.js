@@ -368,7 +368,10 @@ Emulator = (function() {
     
     pub.peek = readWord;
     
-    pub.poke = writeWord;
+    pub.poke = function(address, value) {
+        writeWord(address, value);
+        $(pub).trigger('memWrite');
+    };
 
 
     pub.REG_COUNT = REG_COUNT;
