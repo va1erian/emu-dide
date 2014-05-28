@@ -59,7 +59,8 @@ body {
 #mem-dump-pane .mem-viewer-output {
     background-color:#fff;
     overflow-y: auto;
-    font-size: 12px;
+    font-size: 13px;
+    text-align:right;
     height: 100%;
 }
 
@@ -115,8 +116,8 @@ body {
 #video_canvas {
     image-rendering:-moz-crisp-edges;
     -ms-interpolation-mode:nearest-neighbor;
-    height: 192px;
-    width: 256px;
+    height: 144px;
+    width: 192px;
 }
 
 #program-list li:hover {
@@ -210,6 +211,10 @@ body {
 
 .erroneous-line {
     background-color: #ffcccc;
+}
+
+.executed-line {
+    background-color: #ddd;
 }
 
 /*

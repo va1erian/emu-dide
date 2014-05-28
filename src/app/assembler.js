@@ -7,6 +7,8 @@ Assembler = (function() {
 
     var pub = {}; //public symbols
 
+    var lastAssembledFile;
+    
     //DIDE instruction set, their format type, their token order and opcode
     var DIDE_INSTRUCTIONS = {
         'ADD': {
@@ -136,10 +138,21 @@ Assembler = (function() {
     };
 
     var ASSEMBLER_DIRECTIVES = ['BYTE', 'WORD', 'DEFINE'];
-    var EXECUTABLE_SIZE = 19456 * 4;
-    var EXECUTABLE_BASE = 4096;
+    var EXECUTABLE_SIZE = 9216;
+    var EXECUTABLE_BASE = 1024;
     var REG_COUNT = 32;
     var SPACE_COMMA_SPLIT = /[\s,]+/;
+
+    //Remove comment and split lines 
+    function preprocessSources(sources) {
+        return _.map(sources.split('\n'), function(line) {
+            var commentTokenPos = line.indexOf(';');
+            if (commentTokenPos === -1)
+                return line.trim();
+            else
+                return line.substr(0, commentTokenPos).trim();
+        });
+    }
 
     //Convert a register identifier to a number
     // like "R12" -> 12
@@ -332,6 +345,8 @@ Assembler = (function() {
             return 4;
         } else if (tokens[0] === '.WORD') {
             return (tokens.length - 1) * 4;
+        } else {
+            return 0;
         }
 
     }
@@ -381,13 +396,7 @@ Assembler = (function() {
 
     pub.assemble = function(sources) {
         //get an array of trimmed line, without comments
-        var lines = _.map(sources.split('\n'), function(line) {
-            var commentTokenPos = line.indexOf(';');
-            if (commentTokenPos === -1)
-                return line.trim();
-            else
-                return line.substr(0, commentTokenPos).trim();
-        });
+        var lines = preprocessSources(sources);
 
         var labelContext = {memCursor: EXECUTABLE_BASE, labels: {}};
         //label lookup
@@ -400,7 +409,28 @@ Assembler = (function() {
         _.each(lines, _.partial(assembleLine, emitter, labelContext, _));
         console.log(emitter.getCodeObj());
 
+        lastAssembledFile = sources;
+        
         return emitter.getCodeObj();
+    };
+    
+    
+    // Find the instruction line that match the memory address
+    pub.addressToLine = function(address) {
+        var offset = (address - EXECUTABLE_BASE);
+        var lines  = preprocessSources(lastAssembledFile);
+        var i = 0, lineno = -1;
+        
+        while(offset !== i && lineno < lines.length ) {
+            lineno++;
+            i += calculateInstructionSize(lines[lineno]);
+        }
+        
+        if(offset === i)  {
+            return lineno === -1 ? 0 : lineno;
+        } else {
+            return -1;
+        }
     };
 
     return pub;

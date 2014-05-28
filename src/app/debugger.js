@@ -36,20 +36,24 @@ Debugger = (function() {
     }
     
     function renderMemViewer() {
-        var memDump = '';
+        var memDump = [];
         var mem = Emulator.readMem();
         for(var i = 0; i < ( Emulator.MEMORY_SIZE / 4); i++) {
             if( (i % 4) === 0 ) {
-                memDump += '0x' + formatWord(i * 4) + ':';
+                memDump.push('0x');
+                memDump.push(formatWord(i * 4));
+                memDump.push(': ');
             }
-            memDump += formatWord(mem[i]) + ' ';
+            memDump.push(formatWord(mem[i]));
             
             if( ((i + 1) % 4) === 0) {
-                memDump += '<br/>';
+                memDump.push(' ');
+            } else {
+                memDump.push(' ');
             }
         }
         
-        $('#mem-dump-content').append(memDump);
+        $('#mem-dump-content').text(memDump.join(''));
     }
     
     function memPeekBtnClick() {
@@ -65,8 +69,8 @@ Debugger = (function() {
     }
     
     function memDumpBtnClick() {
-        $('#mem-dump-pane').fadeIn(500);
         renderMemViewer();
+        $('#mem-dump-pane').fadeIn(500);
     }
     
     function regWriteCallback() {
@@ -84,7 +88,11 @@ Debugger = (function() {
         $('#mem-peek-btn').click(memPeekBtnClick);
         $('#mem-poke-btn').click(memPokeBtnClick);
         $('#mem-dump-btn').click(memDumpBtnClick);
-        $('#mem-dump-close').click(function() { $('#mem-dump-pane').fadeOut(500);});
+        $('#mem-dump-close').click(function() { 
+            $('#mem-dump-content').empty();
+            $('#mem-dump-pane').fadeOut(500);
+        
+        });
         
         $(Emulator).on('regWrite', regWriteCallback);
         $(Emulator).on('stateChange', stateChangeCallback);

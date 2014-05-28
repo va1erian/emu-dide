@@ -6,8 +6,8 @@ Video = (function() {
 
     var pub = {}; // public symbols
 
-    var FRAME_WIDTH = 128;
-    var FRAME_HEIGHT = 96;
+    var FRAME_WIDTH = 64;
+    var FRAME_HEIGHT = 48;
 
     var c, ctx, img;
 

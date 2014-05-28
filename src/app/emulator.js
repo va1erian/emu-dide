@@ -5,9 +5,9 @@
 Emulator = (function() {
     'use strict';
 
-    var MEMORY_SIZE = 32768 * 4;
-    var PROGRAM_OBJ_SIZE = 77824;
-    var PROGRAM_OFFSET = 4096;
+    var MEMORY_SIZE = 16384;
+    var PROGRAM_OBJ_SIZE = 9216;
+    var PROGRAM_OFFSET = 1024;
     var REG_COUNT = 32;
     var CPU_STATE = {
         HALTED: 0, RUNNING: 1, PAUSED: 2
@@ -16,7 +16,7 @@ Emulator = (function() {
     var pub = {}; //public symbols
 
     var registers = new Array(REG_COUNT); // 32 registers of 32 bit
-    var carryFlag, overflowFlag, zeroFlag;
+    var carryFlag, overflowFlag, signFlag, zeroFlag;
     var programCounter;
 
     var buffer;
@@ -280,19 +280,20 @@ Emulator = (function() {
         for (i = 0; i < registers.length; i++) {
             registers[i] = 0;
         }
-        programCounter = 0x00001000;
+        programCounter = 0x0000400;
         overflowFlag = false;
         carryFlag    = false;
         zeroFlag     = false;
+        signFlag     = false;
 
         buffer = new ArrayBuffer(MEMORY_SIZE);
         memory = new DataView(buffer);
-        frameBuffer = new Uint16Array(buffer, 106496);
+        frameBuffer = new Uint16Array(buffer, 10240);
         state = CPU_STATE.HALTED;
     };
 
     pub.loadProgram = function(program) {
-        for (var i = PROGRAM_OFFSET; i < (PROGRAM_OBJ_SIZE + PROGRAM_OFFSET); i = i + 4){
+        for (var i = PROGRAM_OFFSET; i < (PROGRAM_OBJ_SIZE + PROGRAM_OFFSET); i += 4){
             writeWord(i, program[(i-PROGRAM_OFFSET)/4]);
         }
     };
@@ -316,8 +317,8 @@ Emulator = (function() {
     };
 
     pub.step = function() {
-        pub.pause();
         cycle();
+        pub.pause();
     };
 
     //reg is the register id, 0-31
@@ -353,6 +354,10 @@ Emulator = (function() {
         return zeroFlag;
     };
     
+    pub.getSignFlag = function() {
+        return signFlag;
+    };
+
     pub.getProgramCounter = function() {
         return programCounter;
     };

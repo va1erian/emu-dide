@@ -8,14 +8,24 @@ UI = (function() {
             editor;
 
     var lastErroneousLine = 0;
+    var lastExecutedLine  = 0;
 
     function markErroneousLine(lineNo) {
         lastErroneousLine = editor.getLineHandle(lineNo);
         editor.addLineClass(lastErroneousLine, 'background', 'erroneous-line');
     }
+    
+    function markExecutedLine(lineNo) {
+        lastExecutedLine = editor.getLineHandle(lineNo);
+        editor.addLineClass(lastExecutedLine, 'background', 'executed-line');
+    }
 
     function clearErroneousLine() {
         editor.removeLineClass(lastErroneousLine, 'background', 'erroneous-line');
+    }
+    
+    function clearExecutedLine() {
+        editor.removeLineClass(lastExecutedLine, 'background', 'executed-line');
     }
 
 
@@ -49,7 +59,7 @@ UI = (function() {
                 break;
             case Emulator.STATE.PAUSED:
                 $('#stepTbBtn').text('Step');
-                setStatusBarError('Emulator paused.');
+                setStatusBarMessage('Emulator paused - PC = ' + Emulator.getProgramCounter());
                 break;
         }
     }
@@ -60,6 +70,7 @@ UI = (function() {
         },
         '#assembleTbBtn': function() {
             clearErroneousLine();
+            clearExecutedLine();
             try {
                 var tmpProg = Assembler.assemble(editor.getValue());
                 Emulator.reset();
@@ -79,7 +90,15 @@ UI = (function() {
             Emulator.run();
         },
         '#stepTbBtn': function() {
+            clearExecutedLine();
+            var line = Assembler.addressToLine(Emulator.getProgramCounter());
+            if(line !== -1) {   
+                markExecutedLine(line);   
+            } else {
+                console.log('oops: failed to find instruction line for the given PC');
+            }
             Emulator.step();
+
         },
         '#settingsTbBtn': function() {
             console.log('settings');
@@ -91,7 +110,7 @@ UI = (function() {
                 console.log(data);
             });
             
-            $('#member-pane').fadeIn(300);
+            $('#member-pane').fadeIn(500);
         }
         
         
