@@ -71,6 +71,7 @@ UI = (function() {
                 $('#login-pane').fadeOut(500);
                 $('#member-pane').fadeIn(500);
                 $('#sidePaneBtn').text('Debugger');
+                currentSidePane = SIDE_PANE.PROGRAMS;
                 break;
         }
 
