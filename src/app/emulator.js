@@ -268,7 +268,7 @@ Emulator = (function() {
         cycle();
         cycle();
         cycle();
-        
+
         if (state === CPU_STATE.RUNNING) {
             setTimeout(run, 0); // schedule next emulator 
         }

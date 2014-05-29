@@ -43,6 +43,8 @@ Video = (function() {
         $(Emulator).on('memWrite', function(e, mem) {
            pub.drawBuffer(Emulator.getFramebuffer()); 
         });
+        
+        pub.drawBuffer(Emulator.getFramebuffer());
     };
 
     pub.drawBuffer = function(buf) {
