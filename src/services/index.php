@@ -3,7 +3,7 @@ require 'flight/Flight.php';
 use \model\entities\User;
 use \model\entities\SourceCode;
 
-$dbdata = [ 'path' => 'C:\Users\cedri_000\Documents\GitHub\emu-dide\build\db\emudide'];
+$dbdata = [ 'path' => realpath('./db/emudide')];
 
 $pdo = new PDO('sqlite:' . $dbdata['path']);
 

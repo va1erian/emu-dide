@@ -419,7 +419,8 @@ Assembler = (function() {
     pub.addressToLine = function(address) {
         var offset = (address - EXECUTABLE_BASE);
         var lines  = preprocessSources(lastAssembledFile);
-        var i = 0, lineno = -1;
+        var i = 0, lineno = 0;
+        
         
         while(offset !== i && lineno < lines.length ) {
             lineno++;
@@ -427,7 +428,7 @@ Assembler = (function() {
         }
         
         if(offset === i)  {
-            return lineno === -1 ? 0 : lineno;
+            return lineno;
         } else {
             return -1;
         }

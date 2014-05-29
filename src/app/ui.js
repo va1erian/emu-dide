@@ -96,7 +96,11 @@ UI = (function() {
 
     var toolbarClickBindings = {
         '#newTbBtn': function() {
+            Emulator.reset();
+            Emulator.halt();
             editor.setValue('\n');
+            clearExecutedLine();
+            clearErroneousLine();
         },
         '#assembleTbBtn': function() {
             clearErroneousLine();
@@ -117,9 +121,11 @@ UI = (function() {
             }
         },
         '#runTbBtn': function() {
+            clearExecutedLine();
             Emulator.run();
         },
         '#stepTbBtn': function() {
+            Emulator.step();
             clearExecutedLine();
             var line = Assembler.addressToLine(Emulator.getProgramCounter());
             if (line !== -1) {
@@ -127,7 +133,6 @@ UI = (function() {
             } else {
                 console.log('oops: failed to find instruction line for the given PC');
             }
-            Emulator.step();
 
         },
         '#settingsTbBtn': function() {

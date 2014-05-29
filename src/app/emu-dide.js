@@ -11,7 +11,7 @@
       Emulator.reset();
       Debugger.init();
       Video.init();
-      Video.drawBuffer(Video.generateTestBuffer());
+      //Video.drawBuffer(Video.generateTestBuffer());
    });
 
 })();
