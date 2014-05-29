@@ -127,12 +127,24 @@ Flight::route('POST /programs/@id', function($id) {
     $request = Flight::request();
     
     $content = $request->data['content'];
-    $pass     = $request->data['password'];
+    $actual_date = date('d/m/Y H:i:s');
     
     $sourceServ = Flight::sourceCodeService();
     if(isset($_SESSION['user'])){
-        $programs = $sourceServ->findById($id, $_SESSION['user']);
-        Flight::json(['sources' => $programs, 'status' => 'ok']);
+        $user = unserialize($_SESSION['user']);
+        
+        $srcCode = new SourceCode();
+        $srcCode->last_update = $actual_date;
+        $srcCode->content = $content;
+        $srcCode->id = $id;
+        $srcCode->app_user_id = $user->id;
+        
+        if($sourceServ->update($srcCode)){
+            Flight::json(['status' => 'ko', 'error' => 'Problem on update'] );
+        } else {
+            Flight::json(['status' => 'ok']);
+        }
+        
     } else {
         Flight::json(['status' => 'ko', 'error' => 'No connected users'] );
     }
@@ -144,7 +156,27 @@ Flight::route('POST /programs/@id', function($id) {
  * Add to the database a new program using the given parameters
  */
 Flight::route('PUT /programs', function() {
+    $request = Flight::request();
+    // TODO : change attributes name on data
+    $name = $request->data['name'];
+    $content  = $request->data['content'];
+    $actual_date = date('d/m/Y H:i:s');
     
+    $sourceServ = Flight::sourceCodeService();
+    if(isset($_SESSION['user'])){
+        $user = unserialize($_SESSION['user']);
+        
+        $srcCode = new SourceCode();
+        $srcCode->last_update = $actual_date;
+        $srcCode->content = $content;
+        $srcCode->name = $name;
+        $srcCode->app_user_id = $user->id;
+        
+        $sourceServ->add($srcCode);
+        Flight::json(['status' => 'ok']);
+    } else {
+        Flight::json(['status' => 'ko', 'error' => 'No connected users'] );
+    }
 });
 
 /*
@@ -155,6 +187,19 @@ Flight::route('PUT /programs', function() {
  */
 Flight::route('DELETE /programs/@id', function($id) {
     
+    $sourceServ = Flight::sourceCodeService();
+    if(isset($_SESSION['user'])){
+        $user = unserialize($_SESSION['user']);
+        
+        $srcCode = new SourceCode();
+        $srcCode->id = $id;
+        $srcCode->app_user_id = $user->id;
+        
+        $sourceServ->remove($srcCode);
+        Flight::json(['status' => 'ok']);
+    } else {
+        Flight::json(['status' => 'ko', 'error' => 'No connected users'] );
+    }
 });
 
 Flight::route('/phpinfo', function() {
