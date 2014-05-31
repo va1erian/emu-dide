@@ -28,37 +28,36 @@ Emulator = (function() {
     var INSTRUCTIONS = {
         '0': { //ADD, ADDI
             f1: function(regD, regA, regB) {
-                registers[regD] = registers[regA] + registers[regB];
+                registers[regD] = doAddition(registers[regA],registers[regB]);
                 $(pub).trigger('regWrite');
                 programCounter += 4;
             },
             f2: function(regD, regA, imm) {
-                registers[regD] = registers[regA] + imm;
+                registers[regD] = doAddition(registers[regA], imm);
                 $(pub).trigger('regWrite');
                 programCounter += 4;
             }
         },
         '1': { //SUB, SUBI
             f1: function(regD, regA, regB) {
-                
+                registers[regD] = doSubstraction(registers[regA],registers[regB]);
+                $(pub).trigger('regWrite');
+                programCounter += 4;
             },
             f2: function(regD, regA, imm) {
-                
+                registers[regD] = doSubstraction(registers[regA], imm);
+                $(pub).trigger('regWrite');
+                programCounter += 4;  
             }
         },
         '2': { //CMP, CMPI
             f1: function(regD, regA, regB) {
-                var result = registers[regA] - registers[regB];
-                
-                if(result === 0) {
-                    zeroFlag = true;
-                }
-                
-                //TODO other flags
+                doSubstraction(registers[regA], registers[regB]);
                 programCounter += 4;                
             },
             f2: function(regD, regA, imm) {
-                
+                doSubstraction(registers[regA], imm);
+                programCounter +=4;
             }
         },
         '4': { //AND, ANDI
@@ -144,28 +143,44 @@ Emulator = (function() {
                 if(zeroFlag) {
                     programCounter += imm;
                 } else {
-                    programCounter +=4;
+                    programCounter += 4;
                 }
             }
         },
         '19': { // BGT
             f3: function(imm) {
-                
+                if( (signFlag === overflowFlag) && !zeroFlag) {
+                    programCounter += imm;
+                } else {
+                    programCounter += 4;
+                }
             }
         },
         '1a': { //BLE
             f3: function(imm) {
-                
+                if((signFlag === overflowFlag) || zeroFlag) {
+                    programCounter += imm;
+                } else {
+                    programcounter += 4;
+                }
             }
         },
         '1b': { //BGTU
             f3: function(imm) {
-                
+                if(!carryFlag) {
+                    programCounter += imm;
+                } else {
+                    programCounter += 4;
+                }
             }
         },
         '1c': { //BLEU
             f3: function(imm) {
-                
+                if(carryFlag || zeroFlag) {
+                    programCounter += imm;
+                } else {
+                    programCounter += 4;
+                }
             }
         },
         '1d': { //BA
@@ -175,16 +190,77 @@ Emulator = (function() {
         },
         '1e': { //BC
             f3: function(imm) {
-                
+                if(carryFlag) {
+                    programCounter += imm;
+                } else {
+                    programCounter += 4;
+                }
             }
         },
         '1f': { //BO
             f3: function(imm) {
-                
+                if(overflowFlag) {
+                    programCounter += imm;
+                } else {
+                    programCounter += 4;
+                }
             }
         }
     };
-
+    
+    
+    //Perform a 32-bit addition and update the status flags accordingly
+    function doAddition(x, y) {
+        var result = x + y;
+        
+        if(result > 0xFFFFFFFF)  {// carry flag
+            result -= 0xFFFFFFFF; //simulate 32-bit wrap
+            carryFlag = true;
+        } else {
+            carryFlag = false;
+        }
+        
+        setFlags(result);
+        
+        return result;
+    }
+    //Perform a 32-bit substraction and update the status flags accordingly
+    function doSubstraction(x, y) {
+        var result = x - y;
+        
+        if( result < -0xFFFFFFFF) {
+            result =  (0xFFFFFFFF - (result + 2 * result)); // what? This is most likely wrong
+            carryFlag = true;
+        } else {
+            carryFlag = false;
+        }
+        
+        setFlags(result);
+        
+        return result;
+    }
+    
+    //Set the CPU flag according to the given value EXCEPT the carry flag
+    function setFlags(x) {
+                
+        if( x > 0x7FFFFFFF ) { //overflow Flag, this is probably wrong too
+            overflowFlag = true;
+        } else {
+            overflowFlag = false;
+        }
+        
+        if( (x >>> 31) === 1 ) { // sign flag
+            signFlag = true;
+        } else {
+            signFlag = false;
+        }
+        
+        if( x === 0 ) {
+            zeroFlag = true; // zero flag
+        } else {
+            zeroFlag = false;
+        }
+    }
 
     function readWord(offset) {
         return memory.getUint32(offset, true);
@@ -232,8 +308,8 @@ Emulator = (function() {
                  'format' : format};
     }
 
+    //Execute the decoded instruction by dispatching it to the instruction handler
     function execute(decoded) { 
-//        console.log(decoded);
         var opcodeHash = decoded.codop.toString(16);
         
         if(!(opcodeHash in INSTRUCTIONS)) {
@@ -253,8 +329,6 @@ Emulator = (function() {
                 break;
         }
         
-//        console.log(registers);
-//        console.log(programCounter);
     }
 
     function cycle() {

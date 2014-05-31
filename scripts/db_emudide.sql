@@ -14,8 +14,7 @@ CREATE TABLE app_sourcecode (
                          NOT NULL,
     app_user_id INTEGER  NOT NULL
                          REFERENCES app_user ( id ),
-    name        VARCHAR  NOT NULL
-                         UNIQUE,
+    name        VARCHAR  NOT NULL,
     last_update DATETIME NOT NULL,
     content     TEXT     NOT NULL 
 );

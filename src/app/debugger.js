@@ -31,7 +31,25 @@ Debugger = (function() {
         if(Emulator.getZeroFlag()) {
             $('#cpu-zero-flag-viewer').addClass('cpu-flag-viewer-active');
         } else {
-            $('#cpu-zero-carry-viewer').removeClass('cpu-flag-viewer-active');
+            $('#cpu-zero-flag-viewer').removeClass('cpu-flag-viewer-active');
+        }
+        
+        if(Emulator.getCarryFlag()){
+            $('#cpu-carry-flag-viewer').addClass('cpu-flag-viewer-active');
+        } else {
+            $('#cpu-carry-flag-viewer').removeClass('cpu-flag-viewer-active');
+        }
+        
+        if(Emulator.getSignFlag()) {
+            $('#cpu-sign-flag-viewer').addClass('cpu-flag-viewer-active');
+        } else {
+            $('#cpu-sign-flag-viewer').removeClass('cpu-flag-viewer-active');
+        }
+        
+        if(Emulator.getOverflowFlag()) {
+            $('#cpu-overflow-flag-viewer').addClass('cpu-flag-viewer-active');
+        } else {
+            $('#cpu-overflow-flag-viewer').removeClass('cpu-flag-viewer-active');
         }
     }
     
