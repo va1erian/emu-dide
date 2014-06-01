@@ -9,11 +9,6 @@ class UserService {
         $this->pdo = $pdo;
     }
     
-    public function findById($id){
-        
-    }
-
-    
     public function findByName($name){
             $stmt = $this->pdo->prepare(
                 'SELECT id, nickname, passhash ' // Ou SELECT * ?

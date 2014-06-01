@@ -26,20 +26,24 @@
         <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
             <div class="container-fluid">
                 <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#collapse-navbar-menu">
+                    Tools
+                    </button>
                     <a href="#"><img src="pub/img/logo.png" alt="EMU-DIDE"/> </a>
                 </div>
-                <div class="navbar-collapse collapse">
-                    <ul class="nav navbar-nav navbar-left">
-                        <li><a id='newTbBtn'   href="#">New</a></li>
-                        <li><a id='assembleTbBtn'   href="#">Assemble</a></li>
-                        <li><a id='runTbBtn'   href="#">Run</a></li>
-                        <li><a id='stepTbBtn' href="#">Step</a></li>
-                        <li><a id='saveTbBtn' href='#'> Save </a> </li>
-                    </ul>
-                    <ul class="nav navbar-nav navbar-right">
-                        <li class="navbar-right emu-dide-right-navbar"><a id='sidePaneBtn' href="#">Login</a></li>
-                    </ul>
-                </div>
+                    <div class="navbar-collapse collapse" id="collapse-navbar-menu">
+                        <ul class="nav navbar-nav navbar-left">
+                            <li><a id='newTbBtn'   href="#">New</a></li>
+                            <li><a id='assembleTbBtn'   href="#">Assemble</a></li>
+                            <li><a id='runTbBtn'   href="#">Run</a></li>
+                            <li><a id='stepTbBtn' href="#">Step</a></li>
+                            <li><a id='saveTbBtn' href='#'> Save </a> </li>
+                        </ul>
+                        <ul class="nav navbar-nav navbar-right">
+                            <li id="user-identity"> </li>
+                            <li class="navbar-right emu-dide-right-navbar"><a id='sidePaneBtn' href="#">Login</a></li>
+                        </ul>
+                    </div>
             </div>
         </div>
 
@@ -133,8 +137,7 @@
                         </div>
                         <div class="form-group">
                             <button type="submit" class="btn btn-default"> <strong> Log in </strong> </button>
-                            <button class="btn btn-default"> Register </button>
-                            <label id="login-status-label" style="display:none"> </label>
+                            <button type="button" id="register-btn" class="btn btn-default"> Register </button>
                         </div>
                     </form>
                 </div>
@@ -144,9 +147,9 @@
                 <div class="member-pane-container">
                     <ul id="program-list">
                     </ul>
-                    <div class="well-sm"> <a class="btn btn-default btn-block"> <strong> Log out </strong> </a> 
-
-                     <a class="btn btn-default btn-block"> Delete Account </a> </div>
+                    <div class="well-sm"> 
+                        <a id="logout-btn" class="btn btn-default btn-block"> <strong> Log out </strong> </a> 
+                    </div>
                 </div>
             </div>
             
@@ -172,11 +175,10 @@
         </script>
         <script type="text/template" id="program-item-tmpl">
             <li>                        
-                <a class="btn btn-default btn-sm program-list-action"> Delete </a>
-                <a class="btn btn-default btn-sm program-list-action"> Duplicate </a>
-
+                <a class="btn btn-default btn-sm program-list-action program-list-action-delete"> Delete </a>
+                <div class=" program-list-action-load">
                 <strong> <%- program.name %> </strong> <span class="program-date"> Last Updated <%- program.last_update %> </span>
-
+                </div>
             </li>
         </script>
         

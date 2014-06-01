@@ -96,11 +96,7 @@ UI = (function() {
 
     var toolbarClickBindings = {
         '#newTbBtn': function() {
-            Emulator.reset();
-            Emulator.halt();
-            editor.setValue('\n');
-            clearExecutedLine();
-            clearErroneousLine();
+            pub.setSources('\n');
         },
         '#assembleTbBtn': function() {
             clearErroneousLine();
@@ -135,8 +131,14 @@ UI = (function() {
             }
 
         },
-        '#settingsTbBtn': function() {
-            console.log('settings');
+        '#saveTbBtn': function() {
+            if(ServerStorage.isLoggedIn()) {
+                var name = prompt('Please name your program.');
+                ServerStorage.storeProgram(name, editor.getValue());
+                
+            } else {
+                alert('You must be logged in to save your program');
+            }
         },
         '#sidePaneBtn': function() {
             if (currentSidePane === SIDE_PANE.DEBUGGER) {
@@ -194,6 +196,15 @@ UI = (function() {
         });
 
         return breakpoints;
+    };
+    
+    pub.setSources = function(sources) {
+        Emulator.halt();
+        Emulator.reset();
+        console.log(sources);
+        editor.setValue(sources);
+        clearExecutedLine();
+        clearErroneousLine();
     };
 
     pub.switchSidePane = switchSidePane;
