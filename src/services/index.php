@@ -102,7 +102,7 @@ Flight::route('GET /programs/@id', function($id) {
         $programs = $sourceServ->findById($id, $user->id);
         Flight::json(['sources' => $programs, 'status' => 'ok']);
     } else {
-        Flight::json(['status' => 'ko', 'error' => 'No connected users']);
+        Flight::json(['status' => 'ko', 'error' => 'User not connected'] );
     }
 });
 
@@ -119,7 +119,7 @@ Flight::route('GET /programs', function() {
         $programs = $sourceServ->findAllByUserId($user->id);
         Flight::json(['sources' => $programs, 'status' => 'ok']);
     } else {
-        Flight::json(['status' => 'ko', 'error' => 'User not connected']);
+        Flight::json(['status' => 'ko', 'error' => 'User not connected'] );
     }
 });
 
@@ -151,7 +151,7 @@ Flight::route('POST /programs/@id', function($id) {
             Flight::json(['status' => 'ko', 'error' => 'Problem on update']);
         }
     } else {
-        Flight::json(['status' => 'ko', 'error' => 'User not connected']);
+        Flight::json(['status' => 'ko', 'error' => 'User not connected'] );
     }
 });
 
@@ -180,7 +180,7 @@ Flight::route('POST /save-program', function() {
         $id = $sourceServ->add($srcCode);
         Flight::json(['status' => 'ok', 'id' => $id]);
     } else {
-        Flight::json(['status' => 'ko', 'error' => 'User not connected']);
+        Flight::json(['status' => 'ko', 'error' => 'User not connected'] );
     }
 });
 
@@ -203,7 +203,7 @@ Flight::route('DELETE /programs/@id', function($id) {
         $sourceServ->remove($srcCode);
         Flight::json(['status' => 'ok']);
     } else {
-        Flight::json(['status' => 'ko', 'error' => 'User not connected']);
+        Flight::json(['status' => 'ko', 'error' => 'User not connected'] );
     }
 });
 
