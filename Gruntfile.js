@@ -39,12 +39,10 @@ module.exports = function(grunt) {
           'build/pub/js/bootstrap.js': ['components/bootstrap/dist/js/bootstrap.js'],
           'build/pub/js/jquery.js': ['components/jquery/dist/jquery.js'],
           'build/pub/css/bootstrap.css': ['components/bootstrap/dist/css/bootstrap.css'],
-          'build/pub/css/bootstrap-theme.css': ['components/bootstrap/dist/css/bootstrap-theme.css'],
           'build/pub/css/codemirror.css' : ['components/codemirror/lib/codemirror.css'],
           'build/emu-dide.html': ['src/view/index.html'],
           'build/pub/css/emu-dide.css': ['src/view/css/emu-dide.css'],
-          'build/pub/img/logo.png': ['src/view/img/logo.png'],
-          'build/pub/img/login-btn-edge.png': ['src/view/img/login-btn-edge.png'],
+          'build/pub/img/': ['src/view/img/*'],
         }
       },
         services: {

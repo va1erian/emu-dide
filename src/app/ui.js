@@ -32,7 +32,7 @@ UI = (function() {
     }
 
 
-    function makeMarker() {
+    function makeBreakpointMarker() {
         var marker = document.createElement("div");
         marker.style.color = "#822";
         marker.innerHTML = "●";
@@ -80,15 +80,15 @@ UI = (function() {
     function updateUI() {
         switch (Emulator.getState()) {
             case Emulator.STATE.RUNNING:
-                $('#stepTbBtn').text('Pause');
+                $('#runTbBtn').text('Pause');
                 setStatusBarMessage('Emulator running...');
                 break;
             case Emulator.STATE.HALTED:
-                $('#stepTbBtn').text('Step');
+                $('#runTbBtn').text('Run');
                 setStatusBarMessage('Emulator halted.');
                 break;
             case Emulator.STATE.PAUSED:
-                $('#stepTbBtn').text('Step');
+                $('#runTbBtn').text('Run');
                 setStatusBarMessage('Emulator paused - PC = ' + Emulator.getProgramCounter());
                 break;
         }
@@ -118,7 +118,12 @@ UI = (function() {
         },
         '#runTbBtn': function() {
             clearExecutedLine();
-            Emulator.run();
+            if( (Emulator.getState() === Emulator.STATE.PAUSED) ||
+                (Emulator.getState() === Emulator.STATE.HALTED)) {
+                Emulator.run();
+            } else {
+                Emulator.pause();   
+            }
         },
         '#stepTbBtn': function() {
             Emulator.step();
@@ -167,14 +172,14 @@ UI = (function() {
             gutters: ['CodeMirror-linenumbers', 'breakpoints']
         });
 
-        editor.on("gutterClick", function(cm, n) {
-            var info = cm.lineInfo(n);
-            if (info.gutterMarkers) {
-                cm.setGutterMarker(n, 'breakpoints', null);
-            } else {
-                cm.setGutterMarker(n, 'breakpoints', makeMarker());
-            }
-        });
+//        editor.on("gutterClick", function(cm, n) {
+//            var info = cm.lineInfo(n);
+//            if (info.gutterMarkers) {
+//                cm.setGutterMarker(n, 'breakpoints', null);
+//            } else {
+//                cm.setGutterMarker(n, 'breakpoints', makeMarker());
+//            }
+//        });
 
         _.each(toolbarClickBindings, function(cb, id) {
             $(id).on('click', cb);

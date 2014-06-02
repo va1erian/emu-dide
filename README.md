@@ -24,5 +24,6 @@ npm install
 bower install
 ```
 
-To build the project, simply use Grunt's ``build'' multi-task.
+To build the project, simply use Grunt's ``build'' multi-task. The application will be built in the in the `build' directory.
+Be sure to create the SQLite database in the db directory (default name 'emudide') before deploying.
 

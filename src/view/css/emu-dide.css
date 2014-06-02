@@ -5,6 +5,12 @@ body {
     /*padding-bottom: 30px;*/
 }
 
+.navbar-toggle {
+    color: #ddd;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
 .navbar {
     border-bottom: 2px solid #710000;
 
@@ -212,9 +218,6 @@ body {
     font-size: 14px;
 }
 
-.CodeMirror-gutter {
-    width: 14px;
-}
 
 .erroneous-line {
     background-color: #ffcccc;
