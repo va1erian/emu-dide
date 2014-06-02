@@ -162,7 +162,7 @@ UI = (function() {
                     "LOAD R4, 4(R2) ; R4 <- v[k+1]\n" +
                     "LOAD R4, 0(R2) ; v[k] <- R4\n" +
                     "STORE R3, 4(R2) ; v[k+1] <- temp\n",
-            mode: 'javascript',
+            mode: 'dide',
             lineNumbers: true,
             gutters: ['CodeMirror-linenumbers', 'breakpoints']
         });

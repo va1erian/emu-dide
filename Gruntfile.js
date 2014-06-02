@@ -14,7 +14,7 @@ module.exports = function(grunt) {
         files: {
           'build/pub/js/codemirror.js': 
             ['components/codemirror/lib/codemirror.js', 
-             'components/codemirror/mode/javascript/javascript.js',
+             'src/codemirror/dide/dide.js',
              'components/codemirror/addon/selection/active-line.js'],
           
         }
