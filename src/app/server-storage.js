@@ -106,7 +106,7 @@ ServerStorage = (function(){
            if(data.status === 'ok') {
                alert('Your account has been created, you may now log in.');
            } else {
-               alert('Sorry, an error occured during the register attempt');
+               alert('This nickname is already used. Please try again.');
            }
         });
         
