@@ -13,25 +13,30 @@ ServerStorage = (function(){
     var identity; //undefined if not logged in
     
     function fetchPrograms() {
-        $.getJSON('/programs', function() {
+        $.getJSON('programs', function() {
             console.log('fetched program list');
         }).done(function(data){
             console.log(data);
             $('#program-list').empty();
             
-            _(data.sources).each(function(i) {
-                var el = $(programItemTemplate({program : i }));
-                el.find('.program-list-action-delete').click( function() {
-                   deleteProgram(i.id);
+            if(data.sources.length === 0) {
+                $('#program-list').append(
+                            '<p class="program-list-placeholder"> ' +
+                            'You don\'t have any stored programs</p>');
+            } else {
+                _(data.sources).each(function(i) {
+                    var el = $(programItemTemplate({program : i }));
+                    el.find('.program-list-action-delete').click( function() {
+                       deleteProgram(i.id);
+                    });
+
+                    el.find('.program-list-action-load'). click(function() { 
+                        fetchProgram(i.id); 
+                    } );
+                    $('#program-list').append(el);
                 });
-                    
-                el.find('.program-list-action-load'). click(function() { 
-                    fetchProgram(i.id); 
-                } );
-                $('#program-list').append(el);
-            });
-            
-        }).error(function(xhr, textStatus, error) {
+            }
+        }).error(function(textStatus, error) {
             console.log(textStatus, error);
             console.log('Failed to fetch program list');
         });
@@ -39,7 +44,7 @@ ServerStorage = (function(){
     }
     
     function deleteProgram (id) {
-        var req = $.ajax('/programs/' + id, { type : 'DELETE' });
+        var req = $.ajax('programs/' + id, { type : 'DELETE' });
         
         req.done(function(data) {
             if(data.status === 'ok') {
@@ -56,7 +61,7 @@ ServerStorage = (function(){
     }
     
     function fetchProgram(id) {
-        var req = $.get('/programs/' + id);
+        var req = $.get('programs/' + id);
         
         req.done(function(data) {
             if(data.status === 'ok') {
@@ -66,7 +71,7 @@ ServerStorage = (function(){
             }
         });
         
-        req.fail(function(req, data, info) {
+        req.fail(function() {
            alert('Sorry, an error when attempting to fetch the program.'); 
         });
     }
@@ -96,17 +101,17 @@ ServerStorage = (function(){
         });
     }
     
-    function processRegisterForm(event) {
+    function processRegisterForm() {
         var nick = $('#login-username-field').val();
         var pwd  = $('#login-password-field').val();
         
-        var req = $.post('/register', { 'nickname' : nick, 'password' : pwd});
+        var req = $.post('register', { 'nickname' : nick, 'password' : pwd});
         
         req.done(function(data) {
            if(data.status === 'ok') {
                alert('Your account has been created, you may now log in.');
            } else {
-               alert('Sorry, an error occured during the register attempt');
+               alert('This nickname is already used. Please try again.');
            }
         });
         
@@ -115,8 +120,8 @@ ServerStorage = (function(){
         });
     }
     
-    function logOut(event) {
-        var query = $.post('/logout');
+    function logOut() {
+        var query = $.post('logout');
         
         query.done(function(data) {
             if(data.status === 'ok') {
@@ -150,7 +155,7 @@ ServerStorage = (function(){
     };
     
     pub.storeProgram = function(name, program) {
-       var req = $.post('/save-program', { 'name' : name, 'content': program });
+       var req = $.post('save-program', { 'name' : name, 'content': program });
        
        req.done(function(data) {
            if(data.status === 'ok') {

@@ -5,6 +5,12 @@ body {
     /*padding-bottom: 30px;*/
 }
 
+.navbar-toggle {
+    color: #ddd;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
 .navbar {
     border-bottom: 2px solid #710000;
 
@@ -118,6 +124,12 @@ body {
     padding: 3px;
 }
 
+.program-list-placeholder {
+    text-align: center;
+    padding: 15px;
+    font-style: italic;
+}
+
 #video_canvas {
     image-rendering:-moz-crisp-edges;
     -ms-interpolation-mode:nearest-neighbor;
@@ -212,9 +224,6 @@ body {
     font-size: 14px;
 }
 
-.CodeMirror-gutter {
-    width: 14px;
-}
 
 .erroneous-line {
     background-color: #ffcccc;

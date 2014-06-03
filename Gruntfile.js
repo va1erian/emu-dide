@@ -7,14 +7,13 @@ module.exports = function(grunt) {
     uglify: {
       codemirror: {
         options: {
-          beautify: false,
-          mangle: false,
-          sourceMap: false
+          compress: true,
+          warnings: false
         },
         files: {
           'build/pub/js/codemirror.js': 
             ['components/codemirror/lib/codemirror.js', 
-             'components/codemirror/mode/javascript/javascript.js',
+             'src/codemirror/dide/dide.js',
              'components/codemirror/addon/selection/active-line.js'],
           
         }
@@ -29,29 +28,49 @@ module.exports = function(grunt) {
         files: {
           'build/pub/js/emu-dide.js': ['src/app/**/*.js']
         }
+      },
+      release: {
+          options: {
+              compress: true
+          },
+          files: {
+              'build/pub/js/emu-dide.js' : ['src/app/**/*.js']
+          }
       }
     },
 
     copy: {
-      debug: {
-        files: {
-          'build/pub/js/underscore.js': ['components/underscore/underscore.js'],
-          'build/pub/js/bootstrap.js': ['components/bootstrap/dist/js/bootstrap.js'],
-          'build/pub/js/jquery.js': ['components/jquery/dist/jquery.js'],
-          'build/pub/css/bootstrap.css': ['components/bootstrap/dist/css/bootstrap.css'],
-          'build/pub/css/bootstrap-theme.css': ['components/bootstrap/dist/css/bootstrap-theme.css'],
-          'build/pub/css/codemirror.css' : ['components/codemirror/lib/codemirror.css'],
-          'build/emu-dide.html': ['src/view/index.html'],
-          'build/pub/css/emu-dide.css': ['src/view/css/emu-dide.css'],
-          'build/pub/img/logo.png': ['src/view/img/logo.png'],
-          'build/pub/img/login-btn-edge.png': ['src/view/img/login-btn-edge.png'],
-        }
-      },
+        resources: {
+          files: {
+            'build/pub/js/underscore.js': ['components/underscore/underscore.js'],
+            'build/pub/js/bootstrap.js': ['components/bootstrap/dist/js/bootstrap.js'],
+            'build/pub/js/jquery.js': ['components/jquery/dist/jquery.js'],
+            'build/pub/css/bootstrap.css': ['components/bootstrap/dist/css/bootstrap.css'],
+            'build/pub/css/codemirror.css' : ['components/codemirror/lib/codemirror.css'],
+            'build/emu-dide.html': ['src/view/index.html'],
+            'build/pub/css/emu-dide.css': ['src/view/css/emu-dide.css'],
+            'build/pub/img/logo.png': ['src/view/img/logo.png'],
+            'build/pub/img/login-btn-edge.png': ['src/view/img/login-btn-edge.png']
+          }
+        },
         services: {
             cwd: 'src/services',
             src: '**/*',
             dest: 'build/',
             expand: true
+        },
+        db: {
+            files : {
+                'build/db/emudide.sqlite' : ['misc/emudide.sqlite']
+            }
+        },
+        htaccess: {
+            files: {
+                'build/.htaccess' : ['misc/root.htaccess'],
+                'build/model/.htaccess' : ['misc/forbid.htaccess'],
+                'build/flight/.htaccess' : ['misc/forbid.htaccess'],
+                'build/db/.htaccess' : ['misc/forbid.htaccess']
+        }
         }
     },
 
@@ -84,11 +103,11 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-copy');
-  grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-php');
-  grunt.registerTask('build', ['jshint:all','uglify:debug', 'uglify:codemirror', 'copy:debug', 'copy:services']);
+  grunt.registerTask('build-debug', ['jshint:all','uglify:debug', 'uglify:codemirror', 'copy:resources', 'copy:services', 'copy:db']);
+  grunt.registerTask('build', ['jshint:all', 'uglify:release', 'uglify:codemirror', 'copy:resources', 'copy:services', 'copy:db', 'copy:htaccess']);
   grunt.registerTask('debug-serve', ['build', 'php:services', 'watch']);
   grunt.registerTask('default', ['clean']);
 };

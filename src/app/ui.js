@@ -32,12 +32,12 @@ UI = (function() {
     }
 
 
-    function makeMarker() {
-        var marker = document.createElement("div");
-        marker.style.color = "#822";
-        marker.innerHTML = "●";
-        return marker;
-    }
+//    function makeBreakpointMarker() {
+//        var marker = document.createElement("div");
+//        marker.style.color = "#822";
+//        marker.innerHTML = "●";
+//        return marker;
+//    }
 
     function setStatusBarError(message) {
         $('#status-bar').html(message).addClass('error');
@@ -80,15 +80,15 @@ UI = (function() {
     function updateUI() {
         switch (Emulator.getState()) {
             case Emulator.STATE.RUNNING:
-                $('#stepTbBtn').text('Pause');
+                $('#runTbBtn').text('Pause');
                 setStatusBarMessage('Emulator running...');
                 break;
             case Emulator.STATE.HALTED:
-                $('#stepTbBtn').text('Step');
+                $('#runTbBtn').text('Run');
                 setStatusBarMessage('Emulator halted.');
                 break;
             case Emulator.STATE.PAUSED:
-                $('#stepTbBtn').text('Step');
+                $('#runTbBtn').text('Run');
                 setStatusBarMessage('Emulator paused - PC = ' + Emulator.getProgramCounter());
                 break;
         }
@@ -118,7 +118,12 @@ UI = (function() {
         },
         '#runTbBtn': function() {
             clearExecutedLine();
-            Emulator.run();
+            if( (Emulator.getState() === Emulator.STATE.PAUSED) ||
+                (Emulator.getState() === Emulator.STATE.HALTED)) {
+                Emulator.run();
+            } else {
+                Emulator.pause();   
+            }
         },
         '#stepTbBtn': function() {
             Emulator.step();
@@ -162,19 +167,19 @@ UI = (function() {
                     "LOAD R4, 4(R2) ; R4 <- v[k+1]\n" +
                     "LOAD R4, 0(R2) ; v[k] <- R4\n" +
                     "STORE R3, 4(R2) ; v[k+1] <- temp\n",
-            mode: 'javascript',
+            mode: 'dide',
             lineNumbers: true,
             gutters: ['CodeMirror-linenumbers', 'breakpoints']
         });
 
-        editor.on("gutterClick", function(cm, n) {
-            var info = cm.lineInfo(n);
-            if (info.gutterMarkers) {
-                cm.setGutterMarker(n, 'breakpoints', null);
-            } else {
-                cm.setGutterMarker(n, 'breakpoints', makeMarker());
-            }
-        });
+//        editor.on("gutterClick", function(cm, n) {
+//            var info = cm.lineInfo(n);
+//            if (info.gutterMarkers) {
+//                cm.setGutterMarker(n, 'breakpoints', null);
+//            } else {
+//                cm.setGutterMarker(n, 'breakpoints', makeMarker());
+//            }
+//        });
 
         _.each(toolbarClickBindings, function(cb, id) {
             $(id).on('click', cb);

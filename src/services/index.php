@@ -5,7 +5,7 @@ require 'flight/Flight.php';
 use \model\entities\User;
 use \model\entities\SourceCode;
 
-$dbdata = [ 'path' => realpath('./db/emudide')];
+$dbdata = [ 'path' => realpath('./db/emudide.sqlite')];
 
 $pdo = new PDO('sqlite:' . $dbdata['path']);
 
@@ -205,10 +205,6 @@ Flight::route('DELETE /programs/@id', function($id) {
     } else {
         Flight::json(['status' => 'ko', 'error' => 'User not connected'] );
     }
-});
-
-Flight::route('/phpinfo', function() {
-    phpinfo();
 });
 
 Flight::start();
