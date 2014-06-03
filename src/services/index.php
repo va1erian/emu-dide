@@ -207,9 +207,5 @@ Flight::route('DELETE /programs/@id', function($id) {
     }
 });
 
-Flight::route('/phpinfo', function() {
-    phpinfo();
-});
-
 Flight::start();
 

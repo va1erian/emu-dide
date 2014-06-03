@@ -36,7 +36,7 @@ ServerStorage = (function(){
                     $('#program-list').append(el);
                 });
             }
-        }).error(function(xhr, textStatus, error) {
+        }).error(function(textStatus, error) {
             console.log(textStatus, error);
             console.log('Failed to fetch program list');
         });
