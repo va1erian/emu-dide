@@ -137,7 +137,6 @@ Assembler = (function() {
         }
     };
 
-    var ASSEMBLER_DIRECTIVES = ['BYTE', 'WORD', 'DEFINE'];
     var EXECUTABLE_SIZE = 9216;
     var EXECUTABLE_BASE = 1024;
     var REG_COUNT = 32;

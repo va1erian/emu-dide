@@ -32,12 +32,12 @@ UI = (function() {
     }
 
 
-    function makeBreakpointMarker() {
-        var marker = document.createElement("div");
-        marker.style.color = "#822";
-        marker.innerHTML = "●";
-        return marker;
-    }
+//    function makeBreakpointMarker() {
+//        var marker = document.createElement("div");
+//        marker.style.color = "#822";
+//        marker.innerHTML = "●";
+//        return marker;
+//    }
 
     function setStatusBarError(message) {
         $('#status-bar').html(message).addClass('error');

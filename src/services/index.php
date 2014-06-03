@@ -5,7 +5,7 @@ require 'flight/Flight.php';
 use \model\entities\User;
 use \model\entities\SourceCode;
 
-$dbdata = [ 'path' => realpath('./db/emudide')];
+$dbdata = [ 'path' => realpath('./db/emudide.sqlite')];
 
 $pdo = new PDO('sqlite:' . $dbdata['path']);
 

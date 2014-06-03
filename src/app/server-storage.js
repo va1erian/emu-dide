@@ -13,7 +13,7 @@ ServerStorage = (function(){
     var identity; //undefined if not logged in
     
     function fetchPrograms() {
-        $.getJSON('/programs', function() {
+        $.getJSON('programs', function() {
             console.log('fetched program list');
         }).done(function(data){
             console.log(data);
@@ -39,7 +39,7 @@ ServerStorage = (function(){
     }
     
     function deleteProgram (id) {
-        var req = $.ajax('/programs/' + id, { type : 'DELETE' });
+        var req = $.ajax('programs/' + id, { type : 'DELETE' });
         
         req.done(function(data) {
             if(data.status === 'ok') {
@@ -56,7 +56,7 @@ ServerStorage = (function(){
     }
     
     function fetchProgram(id) {
-        var req = $.get('/programs/' + id);
+        var req = $.get('programs/' + id);
         
         req.done(function(data) {
             if(data.status === 'ok') {
@@ -66,7 +66,7 @@ ServerStorage = (function(){
             }
         });
         
-        req.fail(function(req, data, info) {
+        req.fail(function() {
            alert('Sorry, an error when attempting to fetch the program.'); 
         });
     }
@@ -96,11 +96,11 @@ ServerStorage = (function(){
         });
     }
     
-    function processRegisterForm(event) {
+    function processRegisterForm() {
         var nick = $('#login-username-field').val();
         var pwd  = $('#login-password-field').val();
         
-        var req = $.post('/register', { 'nickname' : nick, 'password' : pwd});
+        var req = $.post('register', { 'nickname' : nick, 'password' : pwd});
         
         req.done(function(data) {
            if(data.status === 'ok') {
@@ -115,8 +115,8 @@ ServerStorage = (function(){
         });
     }
     
-    function logOut(event) {
-        var query = $.post('/logout');
+    function logOut() {
+        var query = $.post('logout');
         
         query.done(function(data) {
             if(data.status === 'ok') {
@@ -150,7 +150,7 @@ ServerStorage = (function(){
     };
     
     pub.storeProgram = function(name, program) {
-       var req = $.post('/save-program', { 'name' : name, 'content': program });
+       var req = $.post('save-program', { 'name' : name, 'content': program });
        
        req.done(function(data) {
            if(data.status === 'ok') {
