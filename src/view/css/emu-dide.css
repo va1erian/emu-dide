@@ -124,6 +124,12 @@ body {
     padding: 3px;
 }
 
+.program-list-placeholder {
+    text-align: center;
+    padding: 15px;
+    font-style: italic;
+}
+
 #video_canvas {
     image-rendering:-moz-crisp-edges;
     -ms-interpolation-mode:nearest-neighbor;

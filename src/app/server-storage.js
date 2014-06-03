@@ -19,18 +19,23 @@ ServerStorage = (function(){
             console.log(data);
             $('#program-list').empty();
             
-            _(data.sources).each(function(i) {
-                var el = $(programItemTemplate({program : i }));
-                el.find('.program-list-action-delete').click( function() {
-                   deleteProgram(i.id);
+            if(data.sources.length === 0) {
+                $('#program-list').append(
+                            '<p class="program-list-placeholder"> ' +
+                            'You don\'t have any stored programs</p>');
+            } else {
+                _(data.sources).each(function(i) {
+                    var el = $(programItemTemplate({program : i }));
+                    el.find('.program-list-action-delete').click( function() {
+                       deleteProgram(i.id);
+                    });
+
+                    el.find('.program-list-action-load'). click(function() { 
+                        fetchProgram(i.id); 
+                    } );
+                    $('#program-list').append(el);
                 });
-                    
-                el.find('.program-list-action-load'). click(function() { 
-                    fetchProgram(i.id); 
-                } );
-                $('#program-list').append(el);
-            });
-            
+            }
         }).error(function(xhr, textStatus, error) {
             console.log(textStatus, error);
             console.log('Failed to fetch program list');
