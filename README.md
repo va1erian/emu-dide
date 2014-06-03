@@ -55,6 +55,7 @@ written by Mike Cao. Data persistence is done with an SQLite database.
 ##Directory Layout
 
 ```
+/misc                - Misc. files, including the database model and htaccess files
 /src/app             - Core JavaScript modules
 /src/codemirror/     - Contains the style mode for CodeMirror
 /src/services/       - Server-side code for the member storage space
